@@ -73,12 +73,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
+/*
+ * -------------------------------------------------------------------
+ *  Load Composer's vlucas/phpdotenv
+ * -------------------------------------------------------------------
+ */
+$dotenv = new Dotenv\Dotenv('./');
+$dotenv->load();
+
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'wagona_admin_dev',
+	'hostname' => getenv('MYSQL_HOST'),
+	'username' => getenv('MYSQL_USERNAME'),
+	'password' => getenv('MYSQL_PASSWORD'),
+	'database' => getenv('MYSQL_DATABASE'),
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

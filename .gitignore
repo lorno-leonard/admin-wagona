@@ -10,3 +10,5 @@ application/logs/*
 
 user_guide/
 /vendor/
+
+.env
