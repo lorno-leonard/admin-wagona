@@ -58,4 +58,7 @@ $route['translate_uri_dashes'] = FALSE;
 | Sample REST API Routes
 | -------------------------------------------------------------------------
 */
-$route['api/example/users/(:num)'] = 'api/example/users/id/$1'; // Example 4
+// $route['api/example/users/(:num)'] = 'api/example/users/id/$1'; // Example 4
+$route['api'] = 'docs';
+$route['api/users/(:num)'] = 'api/users';
+$route['api/country/(:any)'] = 'api/country';
