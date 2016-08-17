@@ -1,0 +1,21 @@
+{
+  "name": "admin-wagona",
+  "description": "Wagona Admin",
+  "main": "index.js",
+  "authors": [
+    "Leonard Laput <online.lorno@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/lorno-leonard/admin-wagona",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "lodash": "^4.15.0",
+    "angular": "^1.5.8"
+  }
+}
