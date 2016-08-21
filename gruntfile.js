@@ -7,7 +7,9 @@ module.exports = function(grunt) {
     clean: {
       dist: ['assets/dist/*', 'application/views/home.php'],
       html: ['application/views/home.php'],
-      css: ['assets/dist/css/*']
+      css: ['assets/dist/css/*'],
+      vendor: ['assets/dist/js/vendor.js', 'assets/dist/js/vendor.min.js'],
+      js: ['assets/dist/js/app.js', 'assets/dist/js/app.min.js']
     },
     shell: {
       dist: {
@@ -50,7 +52,11 @@ module.exports = function(grunt) {
     },
     concat: {
       html: {
-        src: ['assets/src/templates/header.html', 'assets/src/templates/html/*.html', 'assets/src/templates/footer.html'],
+        src: [
+          'assets/src/templates/header.html',
+          'assets/src/templates/html/*.html',
+          'assets/src/templates/footer.html'
+        ],
         dest: 'application/views/home.php'
       },
       vendor: {
@@ -63,6 +69,7 @@ module.exports = function(grunt) {
           'assets/src/js/theme-plugins/bootstrap.js',
           'assets/src/js/theme-plugins/app.js',
           'assets/src/js/theme-plugins/slimscroll/jquery.slimscroll.min.js',
+          'assets/src/js/theme-plugins/app.plugin.js',
 
           // Bower Components
           'bower_components/angular/angular.min.js',
@@ -70,12 +77,24 @@ module.exports = function(grunt) {
           'bower_components/lodash/dist/lodash.min.js'
         ],
         dest: 'assets/dist/js/vendor.js'
+      },
+      js: {
+        src: [
+          'assets/src/js/angular/app/app.js',
+          'assets/src/js/angular/**/*.js'
+        ],
+        dest: 'assets/dist/js/app.js'
       }
     },
     uglify: {
       vendor: {
         files: {
           'assets/dist/js/vendor.min.js': ['assets/dist/js/vendor.js']
+        }
+      },
+      js: {
+        files: {
+          'assets/dist/js/app.min.js': ['assets/dist/js/app.js']
         }
       }
     },
@@ -87,10 +106,18 @@ module.exports = function(grunt) {
       less: {
         files: ['assets/src/less/**/*'],
         tasks: ['clean:css', 'less:dist', 'cssmin:dist']
+      },
+      js: {
+        files: ['assets/src/js/angular/**/*'],
+        tasks: ['clean:js', 'concat:js', 'uglify:js']
       }
     }
   });
 
+  grunt.registerTask('build-html', ['clean:html', 'concat:html']);
+  grunt.registerTask('build-css', ['clean:css', 'less:dist', 'cssmin:dist']);
+  grunt.registerTask('build-vendor', ['clean:vendor', 'concat:vendor', 'uglify:vendor']);
+  grunt.registerTask('build-js', ['clean:js', 'concat:js', 'uglify:js']);
   grunt.registerTask('build', [
     'clean:dist',
     'shell:dist',
@@ -99,6 +126,8 @@ module.exports = function(grunt) {
     'less:dist',
     'cssmin:dist',
     'concat:vendor',
-    'uglify:vendor'
+    'uglify:vendor',
+    'concat:js',
+    'uglify:js'
   ]);
 };
