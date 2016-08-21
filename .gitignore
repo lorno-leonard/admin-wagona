@@ -14,3 +14,4 @@ user_guide/
 .env
 node_modules/
 bower_components/
+error_log
