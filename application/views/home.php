@@ -2,7 +2,7 @@
 <html class="app" ng-app="app-admin-wagona" ng-controller="mainCtrl">
 <head>
   <meta charset="utf-8">
-  <title>{{title}}</title>
+  <title>Admin - Wagona.com</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <link rel="stylesheet" href="assets/dist/css/app.min.css" type="text/css">
   <!--[if lt IE 9]>
@@ -16,7 +16,7 @@
   <section class="vbox">
 
     <!-- header.navbar -->
-    <header class="bg-dark dk header navbar navbar-fixed-top-xs">
+    <header class="bg-dark lt header navbar navbar-fixed-top-xs">
       <div class="navbar-header aside-md">
         <a class="btn btn-link visible-xs" data-toggle="class:nav-off-screen,open" data-target="#nav,html">
           <i class="fa fa-bars"></i>
@@ -56,7 +56,7 @@
                 <nav class="nav-primary hidden-xs">
                   <ul class="nav">
                     <li class="active">
-                      <a href="" class="active">
+                      <a href="" class="active" ui-sref="dashboard">
                         <i class="fa fa-dashboard icon">
                           <b class="bg-info"></b>
                         </i>
@@ -64,7 +64,7 @@
                       </a>
                     </li>
                     <li>
-                      <a href="">
+                      <a href="" ui-sref="data-entry">
                         <i class="fa fa-list icon">
                           <b class="bg-primary"></b>
                         </i>
@@ -108,7 +108,7 @@
                       </ul>
                     </li>
                     <li>
-                      <a href="">
+                      <a href="" ui-sref="users">
                         <i class="fa fa-users icon">
                           <b class="bg-danger"></b>
                         </i>
@@ -116,7 +116,7 @@
                       </a>
                     </li>
                     <li>
-                      <a href="">
+                      <a href="" ui-sref="transactions">
                         <i class="fa fa-suitcase icon">
                           <b class="bg-warning"></b>
                         </i>
@@ -155,7 +155,11 @@
         <section id="content">
           <section class="vbox">
             <section class="scrollable padder">
-
+              <ul id="awg-breadcrumbs" class="breadcrumb no-border no-radius b-b b-light pull-in" ng-bind-html="pageService.getBreadcrumbs()"></ul>
+              <div class="m-b-md">
+                <h3 class="m-b-none" ng-bind-html="pageService.getPageTitle()"></h3>
+              </div>
+              <section id="awg-content" ui-view></section>
             </section>
           </section>
         </section>
@@ -167,6 +171,31 @@
 
   </section>
   <!-- /section.vbox -->
+
+  <!-- Dashboard Template -->
+  <script type="text/ng-template" id="dashboard.html">
+  
+  </script>
+  <!-- /Dashboard Template -->
+  
+  <!-- Dashboard Template -->
+  <script type="text/ng-template" id="data-entry.html">
+  
+  </script>
+  <!-- /Dashboard Template -->
+  
+  <!-- Transactions Template -->
+  <script type="text/ng-template" id="transactions.html">
+  
+  </script>
+  <!-- /Transactions Template -->
+  
+  <!-- Users Template -->
+  <script type="text/ng-template" id="users.html">
+  
+  </script>
+  <!-- /Users Template -->
+  
   <!-- Scripts -->
   <script src="assets/dist/js/vendor.min.js"></script>
   <script src="assets/dist/js/app.js"></script>

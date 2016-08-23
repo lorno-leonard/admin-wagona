@@ -1,4 +1,5 @@
-app.controller('mainCtrl', function($scope) {
+app.controller('mainCtrl', function($scope, $state, pageService) {
   
-  $scope.title = 'Admin | Wagona.com';
+  $scope.pageService = pageService;
+  $scope.dashboard = {};
 });

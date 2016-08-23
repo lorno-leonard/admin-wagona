@@ -100,15 +100,15 @@ module.exports = function(grunt) {
     },
     watch: {
       html: {
-        files: ['assets/src/templates/**/*'],
+        files: ['assets/src/templates/**/*.html'],
         tasks: ['clean:html', 'concat:html']
       },
       less: {
-        files: ['assets/src/less/**/*'],
+        files: ['assets/src/less/**/*.less'],
         tasks: ['clean:css', 'less:dist', 'cssmin:dist']
       },
       js: {
-        files: ['assets/src/js/angular/**/*'],
+        files: ['assets/src/js/angular/**/*.js'],
         tasks: ['clean:js', 'concat:js', 'uglify:js']
       }
     }
