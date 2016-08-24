@@ -55,88 +55,22 @@
                 <!-- nav -->
                 <nav class="nav-primary hidden-xs">
                   <ul class="nav">
-                    <li class="active">
-                      <a href="" class="active" ui-sref="dashboard">
-                        <i class="fa fa-dashboard icon">
-                          <b class="bg-info"></b>
+                    <li ng-repeat="menu in menus" ng-class="getMenuClass(menu)">
+                      <a href="" ng-class="getMenuClass(menu)" ui-sref="{{getUiSref(menu)}}">
+                        <i ng-class="menu.iconClass">
+                          <b ng-class="menu.bgClass"></b>
                         </i>
-                        <span>Dashboard</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="" ui-sref="data-entry">
-                        <i class="fa fa-list icon">
-                          <b class="bg-primary"></b>
-                        </i>
-                        <span class="pull-right">
+                        <span class="pull-right" ng-if="_.has(menu, 'menus')">
                           <i class="fa fa-angle-down text"></i>
                           <i class="fa fa-angle-up text-active"></i>
                         </span>
-                        <span>Data Entry</span>
+                        <span>{{menu.title}}</span>
                       </a>
-                      <ul class="nav lt">
-                        <li>
-                          <a href="">                                                        
-                            <i class="fa fa-flag"></i>
-                            <span>Country</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="" >                                                        
-                            <i class="fa fa-book"></i>
-                            <span>Syllabi</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="" >                                                        
-                            <i class="fa fa-bookmark"></i>
-                            <span>Subject</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="" >                                                        
-                            <i class="fa fa-certificate"></i>
-                            <span>Topic</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="" >                                                        
-                            <i class="fa fa-question"></i>
-                            <span>Question</span>
-                          </a>
-                        </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <a href="" ui-sref="users">
-                        <i class="fa fa-users icon">
-                          <b class="bg-danger"></b>
-                        </i>
-                        <span>Users</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="" ui-sref="transactions">
-                        <i class="fa fa-suitcase icon">
-                          <b class="bg-warning"></b>
-                        </i>
-                        <span class="pull-right">
-                          <i class="fa fa-angle-down text"></i>
-                          <i class="fa fa-angle-up text-active"></i>
-                        </span>
-                        <span>Transactions</span>
-                      </a>
-                      <ul class="nav lt">
-                        <li>
-                          <a href="">                                                        
-                            <i class="fa fa-credit-card"></i>
-                            <span>Payments</span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="" >                                                        
-                            <i class="fa fa-dollar"></i>
-                            <span>Subscription Prices</span>
+                      <ul class="nav lt" ng-if="_.has(menu, 'menus')">
+                        <li ng-repeat="submenu in menu.menus">
+                          <a href="" ui-sref="{{getUiSref(submenu)}}">
+                            <i ng-class="submenu.iconClass"></i>
+                            <span>{{submenu.title}}</span>
                           </a>
                         </li>
                       </ul>
