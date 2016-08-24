@@ -3,6 +3,10 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
   $scope._ = _;
   $scope.state = $state;
   $scope.pageService = pageService;
+  $scope.dashboard = {};
+  $scope.data_entry = {};
+  $scope.users = {};
+  $scope.transactions = {};
 
   // Menus
   $scope.menus = [{
@@ -17,19 +21,24 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
     'ui-sref': 'data-entry',
     menus: [{
       title: 'Country',
-      iconClass: 'fa fa-flag icon'
+      iconClass: 'fa fa-flag icon',
+      'ui-sref': 'data-entry-country'
     }, {
       title: 'Syllabi',
-      iconClass: 'fa fa-book icon'
+      iconClass: 'fa fa-book icon',
+      'ui-sref': 'data-entry-syllabi'
     }, {
       title: 'Subject',
-      iconClass: 'fa fa-bookmark icon'
+      iconClass: 'fa fa-bookmark icon',
+      'ui-sref': 'data-entry-subject'
     }, {
       title: 'Topic',
-      iconClass: 'fa fa-certificate icon'
+      iconClass: 'fa fa-certificate icon',
+      'ui-sref': 'data-entry-topic'
     }, {
       title: 'Question',
-      iconClass: 'fa fa-question icon'
+      iconClass: 'fa fa-question icon',
+      'ui-sref': 'data-entry-question'
     }]
   }, {
     title: 'Users',
@@ -43,10 +52,12 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
     'ui-sref': 'transactions',
     menus: [{
       title: 'Payments',
-      iconClass: 'fa fa-credit-card icon'
+      iconClass: 'fa fa-credit-card icon',
+      'ui-sref': 'transactions-payments'
     }, {
       title: 'Subscription Prices',
-      iconClass: 'fa fa-dollar icon'
+      iconClass: 'fa fa-dollar icon',
+      'ui-sref': 'transactions-subscription-prices'
     }]
   }];
 
@@ -57,7 +68,7 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
    * @return string   'active' or ''
    */
   $scope.getMenuClass = function(menu) {
-    return _.has(menu, 'ui-sref') && _.isEqual(menu['ui-sref'], $state.current.name) ? 'active' : '';
+    return _.has(menu, 'ui-sref') && (_.isEqual(menu['ui-sref'], $state.current.name) || $state.current.name.indexOf(menu['ui-sref']) != -1) ? 'active' : '';
   };
 
   /**

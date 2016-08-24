@@ -67,8 +67,8 @@
                         <span>{{menu.title}}</span>
                       </a>
                       <ul class="nav lt" ng-if="_.has(menu, 'menus')">
-                        <li ng-repeat="submenu in menu.menus">
-                          <a href="" ui-sref="{{getUiSref(submenu)}}">
+                        <li ng-repeat="submenu in menu.menus" ng-class="getMenuClass(submenu)">
+                          <a href="" ng-class="getMenuClass(submenu)" ui-sref="{{getUiSref(submenu)}}">
                             <i ng-class="submenu.iconClass"></i>
                             <span>{{submenu.title}}</span>
                           </a>

@@ -67,8 +67,8 @@
                         <span>{{menu.title}}</span>
                       </a>
                       <ul class="nav lt" ng-if="_.has(menu, 'menus')">
-                        <li ng-repeat="submenu in menu.menus">
-                          <a href="" ui-sref="{{getUiSref(submenu)}}">
+                        <li ng-repeat="submenu in menu.menus" ng-class="getMenuClass(submenu)">
+                          <a href="" ng-class="getMenuClass(submenu)" ui-sref="{{getUiSref(submenu)}}">
                             <i ng-class="submenu.iconClass"></i>
                             <span>{{submenu.title}}</span>
                           </a>
@@ -112,17 +112,93 @@
   </script>
   <!-- /Dashboard Template -->
   
-  <!-- Dashboard Template -->
-  <script type="text/ng-template" id="data-entry.html">
-  
+  <!-- Data Entry - Country Template -->
+  <script type="text/ng-template" id="data-entry.country.html">
+
   </script>
-  <!-- /Dashboard Template -->
+  <!-- /Data Entry - Country Template -->
+  
+  <!-- Data Entry Template -->
+  <script type="text/ng-template" id="data-entry.html">
+  <div class="row">
+    <div ng-repeat="menu in data_entry.menus" class="col-sm-6 col-md-3 col-lg-2">
+      <a href="" ui-sref="{{getUiSref(menu)}}" title="{{menu.title}}">
+        <section class="panel panel-default">
+          <header class="panel-heading bg-primary lt no-border">
+            <h4 class="text-center m-n text-ellipsis text-white">{{menu.title}}</h4>
+          </header>
+          <div class="panel-body">
+            <div class="clearfix text-center m-t m-b">
+              <div class="inline">
+                <div class="h1"><i ng-class="menu.iconClass"></i></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </a>
+    </div>
+  </div>
+  </script>
+  <!-- /Data Entry Template -->
+  
+  <!-- Data Entry - Question Template -->
+  <script type="text/ng-template" id="data-entry.question.html">
+
+  </script>
+  <!-- /Data Entry - Question Template -->
+  
+  <!-- Data Entry - Subject Template -->
+  <script type="text/ng-template" id="data-entry.subject.html">
+
+  </script>
+  <!-- /Data Entry - Subject Template -->
+  
+  <!-- Data Entry - Syllabi Template -->
+  <script type="text/ng-template" id="data-entry.syllabi.html">
+
+  </script>
+  <!-- /Data Entry - Syllabi Template -->
+  
+  <!-- Data Entry - Topic Template -->
+  <script type="text/ng-template" id="data-entry.topic.html">
+
+  </script>
+  <!-- /Data Entry - Topic Template -->
   
   <!-- Transactions Template -->
   <script type="text/ng-template" id="transactions.html">
-  
+    <div class="row">
+    <div ng-repeat="menu in transactions.menus" class="col-sm-6 col-md-3 col-lg-2">
+      <a href="" ui-sref="{{getUiSref(menu)}}" title="{{menu.title}}">
+        <section class="panel panel-default">
+          <header class="panel-heading bg-warning lt no-border">
+            <h4 class="text-center m-n text-ellipsis text-white">{{menu.title}}</h4>
+          </header>
+          <div class="panel-body">
+            <div class="clearfix text-center m-t m-b">
+              <div class="inline">
+                <div class="h1"><i ng-class="menu.iconClass"></i></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </a>
+    </div>
+  </div>
   </script>
   <!-- /Transactions Template -->
+  
+  <!-- Transactions - Payments Template -->
+  <script type="text/ng-template" id="transactions.payments.html">
+
+  </script>
+  <!-- /Transactions - Payments Template -->
+  
+  <!-- Transactions - Subscription Prices Template -->
+  <script type="text/ng-template" id="transactions.subscription-prices.html">
+
+  </script>
+  <!-- /Transactions - Subscription Prices Template -->
   
   <!-- Users Template -->
   <script type="text/ng-template" id="users.html">

@@ -1,6 +1,23 @@
   <!-- Transactions Template -->
   <script type="text/ng-template" id="transactions.html">
-  
+    <div class="row">
+    <div ng-repeat="menu in transactions.menus" class="col-sm-6 col-md-3 col-lg-2">
+      <a href="" ui-sref="{{getUiSref(menu)}}" title="{{menu.title}}">
+        <section class="panel panel-default">
+          <header class="panel-heading bg-warning lt no-border">
+            <h4 class="text-center m-n text-ellipsis text-white">{{menu.title}}</h4>
+          </header>
+          <div class="panel-body">
+            <div class="clearfix text-center m-t m-b">
+              <div class="inline">
+                <div class="h1"><i ng-class="menu.iconClass"></i></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </a>
+    </div>
+  </div>
   </script>
   <!-- /Transactions Template -->
   
