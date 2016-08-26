@@ -107,18 +107,200 @@ app.controller('dashboardCtrl', function($scope, pageService) {
   // Set Page Title
   pageService.setPageTitle('Dashboard', 'fa fa-dashboard icon');
 });
-app.controller('dataEntryCountryCtrl', function($scope, pageService) {
-  
+app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
+
+  $scope.data = !_.isEmpty($scope.data_entry.country.data) ? $scope.data_entry.country.data : [];
+  $scope.filter = {};
+  $scope.currentDataRow = null;
+  $scope.form = {};
+  $scope.loading = false;
+
   // Set Page Title
   pageService.setPageTitle('Country', 'fa fa-flag icon');
+
+  /**
+   ****************************
+   * DEBOUNCED FUNCTIONS
+   ****************************
+   */
+
+  /**
+   * Debounced - Close Edit form
+   * 
+   */
+  $scope.debCloseEditData = _.debounce(
+    function() {
+      $('section.awg-panel-edit').fadeOut('fast', function() {
+        $(this).prev('#awg-panel-data-entry-country').show();
+        $scope.currentDataRow = null;
+      });
+    }, 
+    $scope.debDuration,
+    $scope.debOptions 
+  );
+
+  /**
+   * Debounced - Save Data
+   * 
+   */
+  $scope.debSaveData = _.debounce(
+    function() {
+      var form = $('section.awg-panel-edit form'),
+        buttons = form.find('.awg-form-button');
+
+      // Validate
+      form.parsley().validate();
+
+      // Check if not Valid
+      if(!form.parsley().isValid()) {
+        return;
+      }
+
+      // Disable Buttons
+      $(buttons).addClass('disabled');
+
+      var data = {
+        id: $scope.currentDataRow.country_id,
+        description: $scope.form.description,
+        status: $scope.form.status
+      };
+      pageService.request('PATCH', 'api/country', data, function(error, data) {
+        if(_.isNull(error)) {
+          var _data = _.clone($scope.data),
+            index = _.findIndex(_data, _.first(_.filter(_data, {country_id: $scope.currentDataRow.country_id})));
+          
+          // Update data
+          $scope.currentDataRow.description = $scope.form.description;
+          $scope.currentDataRow.status = $scope.form.status;
+
+          $scope.data[index].description = $scope.form.description;
+          $scope.data[index].status = +$scope.form.status;
+
+          $scope.data_entry.country.data = $scope.data;
+
+          // Enable Buttons
+          $(buttons).removeClass('disabled');
+
+          // Notify
+          pageService.notify('Success!', 'Successfully updated data.', 'success');
+        }
+        else {
+          console.log(error);
+        }
+      });
+    }, 
+    $scope.debDuration,
+    $scope.debOptions 
+  );
+
+
+  /**
+   ****************************
+   * ANGULAR FUNCTIONS
+   ****************************
+   */
+
+  /**
+   * Initialize Controller
+   * 
+   */
+  $scope.init = function() {
+    if($scope.data.length == 0) {
+      $scope.getData();
+    }
+  };
+
+  /**
+   * Get Data
+   * 
+   */
+  $scope.getData = function() {
+    $scope.data = [];
+    $scope.loading = true;
+    pageService.request('GET', 'api/country', {}, function(error, data) {
+      if(_.isNull(error)) {
+        $scope.data = _.concat($scope.data, data);
+        $scope.data_entry.country.data = $scope.data;
+      }
+      else {
+        console.log(error);
+      }
+      $scope.loading = false;
+    });
+  };
+
+  /**
+   * Filter Data by status
+   * 
+   * @param string    status
+   */
+  $scope.filterStatus = function(status) {
+    $scope.filter.status = status;
+  };
+
+  /**
+   * Update Status
+   * 
+   * @param string    status
+   * @param string    id
+   */
+  $scope.updateStatus = function(status, id) {
+    var data = {
+      id: id,
+      status: status
+    };
+    pageService.request('PATCH', 'api/country', data, function(error, data) {
+      if(_.isNull(error)) {
+        var _data = _.clone($scope.data),
+          index = _.findIndex(_data, _.first(_.filter(_data, {country_id: id})));
+        
+        // Update data
+        $scope.data[index].status = status;
+        $scope.data_entry.country.data = $scope.data;
+      }
+      else {
+        console.log(error);
+      }
+    });
+  };
+  
+  /**
+   * Initialize Edit form
+   * 
+   * @param object    dataRow
+   */
+  $scope.editData = function(dataRow) {
+    $scope.currentDataRow = dataRow;
+    $scope.form.country_id = dataRow.country_id;
+    $scope.form.description = dataRow.description;
+    $scope.form.status = dataRow.status.toString();
+    $('#awg-panel-data-entry-country').fadeOut('fast', function() {
+      var form = $('section.awg-panel-edit form');
+
+      // Reset Form
+      form.parsley().reset();
+
+      $(this).next('section.awg-panel-edit').show();
+    });
+  };
+
+  /**
+   * Close Edit form
+   * 
+   */
+  $scope.closeEditData = function() {
+    $scope.debCloseEditData();
+  };
+
+  /**
+   * Save Data
+   * 
+   */
+  $scope.saveData = function() {
+    $scope.debSaveData();
+  };
 });
 app.controller('dataEntryCtrl', function($scope, pageService) {
-
-  $scope.data_entry.country = {};
-  $scope.data_entry.syllabi = {};
-  $scope.data_entry.subject = {};
-  $scope.data_entry.topic = {};
-  $scope.data_entry.question = {};
   
   // Set Page Title
   pageService.setPageTitle('Data Entry', 'fa fa-list icon');
@@ -138,8 +320,91 @@ app.controller('dataEntrySubjectCtrl', function($scope, pageService) {
 });
 app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
   
+  $scope.data = !_.isEmpty($scope.data_entry.syllabi.data) ? $scope.data_entry.syllabi.data : [];
+  $scope.filter = {};
+  $scope.currentDataRow = null;
+  $scope.form = {};
+  $scope.loading = false;
+
   // Set Page Title
   pageService.setPageTitle('Syllabi', 'fa fa-book icon');
+
+  /**
+   ****************************
+   * DEBOUNCED FUNCTIONS
+   ****************************
+   */
+
+
+  /**
+   ****************************
+   * ANGULAR FUNCTIONS
+   ****************************
+   */
+
+  /**
+   * Initialize Controller
+   * 
+   */
+  $scope.init = function() {
+    if($scope.data.length == 0) {
+      $scope.getData();
+    }
+  };
+
+  /**
+   * Get Data
+   * 
+   */
+  $scope.getData = function() {
+    $scope.data = [];
+    $scope.loading = true;
+    pageService.request('GET', 'api/syllabi', {}, function(error, data) {
+      if(_.isNull(error)) {
+        $scope.data = _.concat($scope.data, data);
+        $scope.data_entry.syllabi.data = $scope.data;
+      }
+      else {
+        console.log(error);
+      }
+      $scope.loading = false;
+    });
+  };
+
+  /**
+   * Filter Data by status
+   * 
+   * @param string    status
+   */
+  $scope.filterStatus = function(status) {
+    $scope.filter.status = status;
+  };
+
+  /**
+   * Update Status
+   * 
+   * @param string    status
+   * @param string    id
+   */
+  $scope.updateStatus = function(status, id) {
+    var data = {
+      id: id,
+      status: status
+    };
+    pageService.request('PATCH', 'api/syllabi', data, function(error, data) {
+      if(_.isNull(error)) {
+        var _data = _.clone($scope.data),
+          index = _.findIndex(_data, _.first(_.filter(_data, {syllabus_id: id})));
+        
+        // Update data
+        $scope.data[index].status = status;
+        $scope.data_entry.syllabi.data = $scope.data;
+      }
+      else {
+        console.log(error);
+      }
+    });
+  };
 });
 app.controller('dataEntryTopicCtrl', function($scope, pageService) {
   
@@ -152,10 +417,29 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
   $scope.state = $state;
   $scope.pageService = pageService;
   $scope.dashboard = {};
-  $scope.data_entry = {};
-  $scope.users = {};
+  $scope.data_entry = {
+    country: {
+      data: []
+    },
+    syllabi: {
+      data: []
+    },
+    subject: {},
+    topic: {},
+    question: {}
+  };
+  $scope.users = {
+    data: []
+  };
   $scope.transactions = {};
 
+  // Debounce variables
+  $scope.debDuration = 500;
+  $scope.debOptions = {
+    leading: true,
+    trailing: false
+  };
+  
   // Menus
   $scope.menus = [{
     title: 'Dashboard',
@@ -228,6 +512,14 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
   $scope.getUiSref = function(menu) {
     return _.has(menu, 'ui-sref') && !_.isEmpty(menu['ui-sref']) ? menu['ui-sref'] : '.';
   };
+
+  /**
+   * Scroll to Top
+   * 
+   */
+  $scope.scrollToTop = function() {
+    
+  };
 });
 app.controller('transactionsCtrl', function($scope, pageService) {
   
@@ -248,9 +540,237 @@ app.controller('transactionsSubscriptionPricesCtrl', function($scope, pageServic
   pageService.setPageTitle('Subscription Prices', 'fa fa-dollar icon');
 });
 app.controller('usersCtrl', function($scope, pageService) {
+
+  $scope.data = !_.isEmpty($scope.users.data) ? $scope.users.data : [];
+  $scope.filter = {};
+  $scope.paymentStatus = '';
+  $scope.currentDataRow = null;
+  $scope.form = {};
+  $scope.loading = false;
   
   // Set Page Title
   pageService.setPageTitle('Users', 'fa fa-users icon');
+
+  /**
+   ****************************
+   * DEBOUNCED FUNCTIONS
+   ****************************
+   */
+
+  /**
+   * Debounced - Close Edit form
+   * 
+   */
+  $scope.debCloseEditData = _.debounce(
+    function() {
+      $('section.awg-panel-edit').fadeOut('fast', function() {
+        $(this).prev('#awg-panel-users').show();
+        $scope.currentDataRow = null;
+      });
+    }, 
+    $scope.debDuration,
+    $scope.debOptions 
+  );
+
+  /**
+   * Debounced - Save Data
+   * 
+   */
+  $scope.debSaveData = _.debounce(
+    function() {
+      var form = $('section.awg-panel-edit form'),
+        buttons = form.find('.awg-form-button');
+
+      // Validate
+      form.parsley().validate();
+
+      // Check if not Valid
+      if(!form.parsley().isValid()) {
+        return;
+      }
+
+      // Disable Buttons
+      $(buttons).addClass('disabled');
+
+      var data = {
+        id: $scope.currentDataRow.account_id,
+        account_type: $scope.form.account_type,
+        payment_status: $scope.form.payment_status,
+        status: $scope.form.status
+      };
+      pageService.request('PATCH', 'api/users', data, function(error, data) {
+        if(_.isNull(error)) {
+          var _data = _.clone($scope.data),
+            index = _.findIndex(_data, _.first(_.filter(_data, {country_id: $scope.currentDataRow.account_id})));
+          
+          // Update data
+          $scope.currentDataRow.account_type = $scope.form.account_type;
+          $scope.currentDataRow.payment_status = $scope.form.payment_status;
+          $scope.currentDataRow.status = $scope.form.status;
+
+          $scope.data[index].account_type = $scope.form.account_type;
+          $scope.data[index].payment_status = $scope.form.payment_status;
+          $scope.data[index].status = +$scope.form.status;
+
+          $scope.users.data = $scope.data;
+
+          // Enable Buttons
+          $(buttons).removeClass('disabled');
+
+          // Notify
+          pageService.notify('Success!', 'Successfully updated data.', 'success');
+        }
+        else {
+          console.log(error);
+        }
+      });
+    }, 
+    $scope.debDuration,
+    $scope.debOptions 
+  );
+
+
+  /**
+   ****************************
+   * ANGULAR FUNCTIONS
+   ****************************
+   */
+
+  /**
+   * Initialize Controller
+   * 
+   */
+  $scope.init = function() {
+    if($scope.data.length == 0) {
+      $scope.getData();
+    }
+  };
+
+  /**
+   * Get Data
+   * 
+   */
+  $scope.getData = function() {
+    $scope.data = [];
+    $scope.loading = true;
+    pageService.request('GET', 'api/users', {}, function(error, data) {
+      if(_.isNull(error)) {
+        $scope.data = _.concat($scope.data, data);
+        $scope.users.data = $scope.data;
+      }
+      else {
+        console.log(error);
+      }
+      $scope.loading = false;
+    });
+  };
+
+  /**
+   * Filter Data by Account Type
+   * 
+   * @param string    accountType
+   */
+  $scope.filterAccountType = function(accountType) {
+    $scope.filter.account_type = accountType;
+  };
+
+  /**
+   * Filter Data by Payment Status
+   * 
+   * @param string    paymentStatus
+   */
+  $scope.filterPaymentStatus = function(data) {
+    if(_.isEqual($scope.paymentStatus, '')) {
+      return true;
+    }
+    else {
+      return _.isEqual(data.payment_status, $scope.paymentStatus)
+    }
+  };
+
+  /**
+   * Filter Data by status
+   * 
+   * @param string    status
+   */
+  $scope.filterStatus = function(status) {
+    $scope.filter.status = status;
+  };
+
+  /**
+   * Set filter Payment Status
+   * 
+   * @param string    paymentStatus
+   */
+  $scope.setFilterPaymentStatus = function(paymentStatus) {
+    $scope.paymentStatus = paymentStatus;
+  };
+
+  /**
+   * Update Status
+   * 
+   * @param string    status
+   * @param string    id
+   */
+  $scope.updateStatus = function(status, id) {
+    var data = {
+      id: id,
+      status: status
+    };
+    pageService.request('PATCH', 'api/users', data, function(error, data) {
+      if(_.isNull(error)) {
+        var _data = _.clone($scope.data),
+          index = _.findIndex(_data, _.first(_.filter(_data, {account_id: id})));
+        
+        // Update data
+        $scope.data[index].status = status;
+        $scope.users.data = $scope.data;
+      }
+      else {
+        console.log(error);
+      }
+    });
+  };
+
+  /**
+   * Initialize Edit form
+   * 
+   * @param object    dataRow
+   */
+  $scope.editData = function(dataRow) {
+    $scope.currentDataRow = dataRow;
+    console.log(dataRow);
+    $scope.form.account_id = dataRow.account_id;
+    $scope.form.first_name = dataRow.first_name;
+    $scope.form.surname = dataRow.surname;
+    $scope.form.account_type = dataRow.account_type;
+    $scope.form.payment_status = dataRow.payment_status;
+    $scope.form.status = dataRow.status.toString();
+    $('#awg-panel-users').fadeOut('fast', function() {
+      var form = $('section.awg-panel-edit form');
+
+      // Reset Form
+      form.parsley().reset();
+
+      $(this).next('section.awg-panel-edit').show();
+    });
+  };
+
+  /**
+   * Close Edit form
+   * 
+   */
+  $scope.closeEditData = function() {
+    $scope.debCloseEditData();
+  };
+
+  /**
+   * Save Data
+   * 
+   */
+  $scope.saveData = function() {
+    $scope.debSaveData();
+  };
 });
 // prevent defalt action when clicking on <a /> element
 // with empty or '#' href
@@ -267,7 +787,7 @@ app.directive('a', function() {
     }
   };
 });
-app.service('pageService', function($state, $sce) {
+app.service('pageService', function($http, $state, $sce) {
   var pageTitle = '',
     pageTitleHtml = '';
 
@@ -321,5 +841,56 @@ app.service('pageService', function($state, $sce) {
   this.setPageTitle = function(title, iconClass) {
     pageTitle = title;
     pageTitleHtml = (!_.isUndefined(iconClass) ? '<i class="' + iconClass + '"></i> ' : '') + title;
+  };
+
+  /**
+   * Executes an HTTP request and the callback after
+   * 
+   * @param string    method
+   * @param string    url
+   * @param object    data
+   * @param function  callback
+   */
+  this.request = function(method, url, data, callback) {
+    var methodVerbs = ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
+      data = _.isUndefined(data) ? {} : data;
+
+    if($.inArray(_.toUpper(method), methodVerbs) != -1) {
+      $http[_.toLower(method)](url, data)
+        .success(function(response) {
+          callback(null, response);
+        })
+        .error(function(errorResponse) {
+          callback(errorResponse, null);
+        });
+    }
+    else {
+      callback({
+        status: false,
+        error: {
+          message: 'Passed method is not a valid HTTP method.'
+        }
+      }, null);
+    }
+  };
+
+  /**
+   * Notify
+   * 
+   * @param string    title
+   * @param string    message
+   * @param string    type [success, info, danger, warning]
+   */
+  this.notify = function(title, message, type) {
+    var title = !_.isUndefined(title) ? title : 'Notification',
+      message = !_.isUndefined(message) ? message : '',
+      type = !_.isUndefined(type) && _.indexOf(['success', 'info', 'danger', 'warning'], type) != -1 ? type : 'info';
+
+    $.notify({
+      title: '<div><strong>' + title + '</strong></div>',
+      message: message
+    }, {
+      type: type
+    })
   };
 });

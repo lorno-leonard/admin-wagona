@@ -8,7 +8,7 @@ class Country_model extends CI_Model {
   }
 
   /**
-   * This method will get countrues with specific or none optiona
+   * Get countries with/without options
    *
    * @param array $opts         array containing [id, status, limit, offset]
    * 
@@ -19,8 +19,8 @@ class Country_model extends CI_Model {
     $fields = array('country_id', 'description', 'status');
 
     // Limit, Offset
-    $limit = !is_null($opts['limit']) ? $opts['limit'] : 20;
-    $offset = !is_null($opts['offset']) ? $opts['offset'] : 0;
+    $limit = !is_null($opts['limit']) ? $opts['limit'] : null;
+    $offset = !is_null($opts['offset']) ? $opts['offset'] : null;
 
     // Specific fields
     if(!is_null($opts['id'])) {
@@ -31,9 +31,24 @@ class Country_model extends CI_Model {
     $this->db->select(implode(', ', $fields));
     $this->db->from('country_list');
     $this->db->order_by('country_id', 'ASC');
-    $this->db->limit($limit, $offset);
+    if(!is_null($limit)) {
+      if(!is_null($offset)) $this->db->limit($limit, $offset);
+      else $this->db->limit($limit);
+    }
     $query = $this->db->get();
 
     return $query->result_array();
+  }
+
+  /**
+   * Update country
+   *
+   * @param array $data     columns to update
+   * @param number $id      record id
+   */
+  public function update($data, $id) {
+    $this->db->where('country_id', $id);
+    $this->db->update('country_list', $data);
+    return;
   }
 }

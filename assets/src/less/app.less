@@ -3,14 +3,34 @@
 @import "vendor/font-awesome.min.less";
 @import "vendor/font.less";
 @import "app/app.less";
+// @import (less) "../js/theme-plugins/datatables/datatables.css";
 
 // Custom Style
 .navbar-brand img {
   max-height: 40px !important;
 }
 
+.btn-group > .btn.active {
+  font-weight: bold;
+}
+
+div.table-responsive {
+  min-height: 300px;
+}
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak],
 .ng-cloak, .x-ng-cloak,
 .ng-hide:not(.ng-hide-animate) {
   display: none !important;
+}
+
+#awg-btn-scroll-top {
+  position: absolute;
+  bottom: 1em;
+  right: 2em;
+  display: none;
+}
+
+.alert {
+  font-size: 1em;
 }

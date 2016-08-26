@@ -69,12 +69,17 @@ module.exports = function(grunt) {
           'assets/src/js/theme-plugins/bootstrap.js',
           'assets/src/js/theme-plugins/app.js',
           'assets/src/js/theme-plugins/slimscroll/jquery.slimscroll.min.js',
+          'assets/src/js/theme-plugins/slimscroll/jquery.slimscroll.min.js',
+          'assets/src/js/theme-plugins/parsley/parsley.min.js',
+          'assets/src/js/theme-plugins/parsley/parsley.extend.js',
           'assets/src/js/theme-plugins/app.plugin.js',
 
           // Bower Components
+          'bower_components/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js',
           'bower_components/angular/angular.min.js',
           'bower_components/angular-ui-router/release/angular-ui-router.min.js',
-          'bower_components/lodash/dist/lodash.min.js'
+          'bower_components/lodash/dist/lodash.min.js',
+          'bower_components/async/dist/async.min.js'
         ],
         dest: 'assets/dist/js/vendor.js'
       },

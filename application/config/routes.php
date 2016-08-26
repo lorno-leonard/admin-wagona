@@ -62,3 +62,4 @@ $route['translate_uri_dashes'] = FALSE;
 $route['api'] = 'docs';
 $route['api/users/(:num)'] = 'api/users';
 $route['api/country/(:any)'] = 'api/country';
+$route['api/syllabi/(:any)'] = 'api/syllabi';

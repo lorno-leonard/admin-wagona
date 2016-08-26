@@ -1,4 +1,4 @@
-app.service('pageService', function($state, $sce) {
+app.service('pageService', function($http, $state, $sce) {
   var pageTitle = '',
     pageTitleHtml = '';
 
@@ -52,5 +52,56 @@ app.service('pageService', function($state, $sce) {
   this.setPageTitle = function(title, iconClass) {
     pageTitle = title;
     pageTitleHtml = (!_.isUndefined(iconClass) ? '<i class="' + iconClass + '"></i> ' : '') + title;
+  };
+
+  /**
+   * Executes an HTTP request and the callback after
+   * 
+   * @param string    method
+   * @param string    url
+   * @param object    data
+   * @param function  callback
+   */
+  this.request = function(method, url, data, callback) {
+    var methodVerbs = ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
+      data = _.isUndefined(data) ? {} : data;
+
+    if($.inArray(_.toUpper(method), methodVerbs) != -1) {
+      $http[_.toLower(method)](url, data)
+        .success(function(response) {
+          callback(null, response);
+        })
+        .error(function(errorResponse) {
+          callback(errorResponse, null);
+        });
+    }
+    else {
+      callback({
+        status: false,
+        error: {
+          message: 'Passed method is not a valid HTTP method.'
+        }
+      }, null);
+    }
+  };
+
+  /**
+   * Notify
+   * 
+   * @param string    title
+   * @param string    message
+   * @param string    type [success, info, danger, warning]
+   */
+  this.notify = function(title, message, type) {
+    var title = !_.isUndefined(title) ? title : 'Notification',
+      message = !_.isUndefined(message) ? message : '',
+      type = !_.isUndefined(type) && _.indexOf(['success', 'info', 'danger', 'warning'], type) != -1 ? type : 'info';
+
+    $.notify({
+      title: '<div><strong>' + title + '</strong></div>',
+      message: message
+    }, {
+      type: type
+    })
   };
 });

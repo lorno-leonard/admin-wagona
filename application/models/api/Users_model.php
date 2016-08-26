@@ -8,7 +8,7 @@ class Users_model extends CI_Model {
   }
 
   /**
-   * This method will get users with specific or none optiona
+   * Get users with/without options
    *
    * @param array $opts         array containing [id, status, account_type, payment_status, limit, offset]
    * 
@@ -19,8 +19,8 @@ class Users_model extends CI_Model {
     $fields = array('account_id', 'first_name', 'surname', 'account_type', 'payment_status', 'status');
 
     // Limit, Offset
-    $limit = !is_null($opts['limit']) ? $opts['limit'] : 20;
-    $offset = !is_null($opts['offset']) ? $opts['offset'] : 0;
+    $limit = !is_null($opts['limit']) ? $opts['limit'] : null;
+    $offset = !is_null($opts['offset']) ? $opts['offset'] : null;
 
     // Specific fields
     if(!is_null($opts['id'])) {
@@ -40,9 +40,24 @@ class Users_model extends CI_Model {
     $this->db->select(implode(', ', $fields));
     $this->db->from('user_accounts');
     $this->db->order_by('account_id', 'ASC');
-    $this->db->limit($limit, $offset);
+    if(!is_null($limit)) {
+      if(!is_null($offset)) $this->db->limit($limit, $offset);
+      else $this->db->limit($limit);
+    }
     $query = $this->db->get();
 
     return $query->result_array();
+  }
+
+  /**
+   * Update user
+   *
+   * @param array $data     columns to update
+   * @param number $id      record id
+   */
+  public function update($data, $id) {
+    $this->db->where('account_id', $id);
+    $this->db->update('user_accounts', $data);
+    return;
   }
 }

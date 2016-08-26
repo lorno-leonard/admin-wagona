@@ -17,6 +17,8 @@
   "dependencies": {
     "lodash": "^4.15.0",
     "angular": "^1.5.8",
-    "angular-ui-router": "^0.3.1"
+    "angular-ui-router": "^0.3.1",
+    "async": "^2.0.1",
+    "remarkable-bootstrap-notify": "^3.1.3"
   }
 }

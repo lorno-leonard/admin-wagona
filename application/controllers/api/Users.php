@@ -5,13 +5,24 @@ require APPPATH . '/libraries/REST_Controller.php';
 
 class Users extends REST_Controller {
 
+  private $listAccountType = array(
+    'PAID-ACCOUNT',
+    'FREE-ACCOUNT'
+  );
+
+  private $listPaymentStatus = array(
+    'COMPLETE',
+    'NOT-COMPLETE',
+    'WAIVED'
+  );
+
   function __construct() {
     parent::__construct();
     $this->load->model('api/users_model');
   }
 
   /**
-   * This method will get users with specific or none URI parameters
+   * Get users with/without URI parameters
    *
    * @param URI id              user id
    * @param URI status          status [1,0]
@@ -55,6 +66,55 @@ class Users extends REST_Controller {
           'message' => $e->getMessage()
         ]
       ], 500);
+    }
+  }
+
+  /**
+   * Update users
+   *
+   * @param URI id              account id
+   * @param URI status          status [1,0]
+   * 
+   * @return json
+   */
+  public function index_patch() {
+    // Params
+    $id = $this->uri->segment(3);
+    $id = !is_null($id) ? $id : $this->patch('id');
+    $accountType = !is_null($this->patch('account_type')) && in_array($this->patch('account_type'), $this->listAccountType) ? $this->patch('account_type') : null;
+    $paymentStatus = !is_null($this->patch('payment_status')) && in_array($this->patch('payment_status'), $this->listPaymentStatus) ? $this->patch('payment_status') : null;
+    $status = !is_null($this->patch('status')) && in_array((int) $this->patch('status'), array(1, 0)) ? (int) $this->patch('status') : null;
+
+    // Set Update Data
+    $data = array();
+    if(!is_null($accountType)) $data['account_type'] = $accountType;
+    if(!is_null($paymentStatus)) $data['payment_status'] = $paymentStatus;
+    if(!is_null($status)) $data['status'] = $status;
+
+    // Check if $status is null
+    if(count($data) == 0) {
+      $this->set_response([
+        'status' => FALSE,
+        'error' => [
+          'message' => 'no parameter passsed.'
+        ]
+      ], 400);
+      return;
+    }
+
+    // Update Data
+    try {
+      $result = $this->users_model->update($data, $id);
+      $this->set_response($result, REST_Controller::HTTP_OK);
+    }
+    catch(Exception $e) {
+      $this->set_response([
+        'status' => FALSE,
+        'error' => [
+          'classname' => get_class($e),
+          'message' => $e->getMessage()
+        ]
+      ], 400);
     }
   }
 }

@@ -4,10 +4,29 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
   $scope.state = $state;
   $scope.pageService = pageService;
   $scope.dashboard = {};
-  $scope.data_entry = {};
-  $scope.users = {};
+  $scope.data_entry = {
+    country: {
+      data: []
+    },
+    syllabi: {
+      data: []
+    },
+    subject: {},
+    topic: {},
+    question: {}
+  };
+  $scope.users = {
+    data: []
+  };
   $scope.transactions = {};
 
+  // Debounce variables
+  $scope.debDuration = 500;
+  $scope.debOptions = {
+    leading: true,
+    trailing: false
+  };
+  
   // Menus
   $scope.menus = [{
     title: 'Dashboard',
@@ -79,5 +98,13 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
    */
   $scope.getUiSref = function(menu) {
     return _.has(menu, 'ui-sref') && !_.isEmpty(menu['ui-sref']) ? menu['ui-sref'] : '.';
+  };
+
+  /**
+   * Scroll to Top
+   * 
+   */
+  $scope.scrollToTop = function() {
+    
   };
 });

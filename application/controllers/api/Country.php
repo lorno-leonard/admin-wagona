@@ -11,7 +11,7 @@ class Country extends REST_Controller {
   }
 
   /**
-   * This method will get countries with specific or none URI parameters
+   * Get countries with/without URI parameters
    *
    * @param URI id              country id
    * @param URI status          status [1,0]
@@ -48,11 +48,54 @@ class Country extends REST_Controller {
           'classname' => get_class($e),
           'message' => $e->getMessage()
         ]
-      ], 500);
+      ], 400);
     }
   }
 
+  /**
+   * Update country
+   *
+   * @param URI id              country id
+   * @param URI status          status [1,0]
+   * 
+   * @return json
+   */
   public function index_patch() {
-    die('USERS PATCH');
+    // Params
+    $id = $this->uri->segment(3);
+    $id = !is_null($id) ? $id : $this->patch('id');
+    $description = !is_null($this->patch('description')) ? $this->patch('description') : null;
+    $status = !is_null($this->patch('status')) && in_array((int) $this->patch('status'), array(1, 0)) ? (int) $this->patch('status') : null;
+
+    // Set Update Data
+    $data = array();
+    if(!is_null($description)) $data['description'] = $description;
+    if(!is_null($status)) $data['status'] = $status;
+
+    // Check if $status is null
+    if(count($data) == 0) {
+      $this->set_response([
+        'status' => FALSE,
+        'error' => [
+          'message' => 'no parameter passsed.'
+        ]
+      ], 400);
+      return;
+    }
+
+    // Update Data
+    try {
+      $result = $this->country_model->update($data, $id);
+      $this->set_response($result, REST_Controller::HTTP_OK);
+    }
+    catch(Exception $e) {
+      $this->set_response([
+        'status' => FALSE,
+        'error' => [
+          'classname' => get_class($e),
+          'message' => $e->getMessage()
+        ]
+      ], 400);
+    }
   }
 }
