@@ -107,7 +107,7 @@ app.controller('dashboardCtrl', function($scope, pageService) {
   // Set Page Title
   pageService.setPageTitle('Dashboard', 'fa fa-dashboard icon');
 });
-app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
+app.controller('dataEntryCountryCtrl', function($scope, pageService) {
 
   $scope.data = !_.isEmpty($scope.data_entry.country.data) ? $scope.data_entry.country.data : [];
   $scope.filter = {};
@@ -159,12 +159,12 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
       // Disable Buttons
       $(buttons).addClass('disabled');
 
-      var data = {
+      var params = {
         id: $scope.currentDataRow.country_id,
         description: $scope.form.description,
         status: $scope.form.status
       };
-      pageService.request('PATCH', 'api/country', data, function(error, data) {
+      pageService.request('PATCH', 'api/country', params, function(error, data) {
         if(_.isNull(error)) {
           var _data = _.clone($scope.data),
             index = _.findIndex(_data, _.first(_.filter(_data, {country_id: $scope.currentDataRow.country_id})));
@@ -178,15 +178,12 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
 
           $scope.data_entry.country.data = $scope.data;
 
-          // Enable Buttons
-          $(buttons).removeClass('disabled');
-
           // Notify
           pageService.notify('Success!', 'Successfully updated data.', 'success');
         }
-        else {
-          console.log(error);
-        }
+
+        // Enable Buttons
+        $(buttons).removeClass('disabled');
       });
     }, 
     $scope.debDuration,
@@ -222,9 +219,6 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
         $scope.data = _.concat($scope.data, data);
         $scope.data_entry.country.data = $scope.data;
       }
-      else {
-        console.log(error);
-      }
       $scope.loading = false;
     });
   };
@@ -245,11 +239,11 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
    * @param string    id
    */
   $scope.updateStatus = function(status, id) {
-    var data = {
+    var params = {
       id: id,
       status: status
     };
-    pageService.request('PATCH', 'api/country', data, function(error, data) {
+    pageService.request('PATCH', 'api/country', params, function(error, data) {
       if(_.isNull(error)) {
         var _data = _.clone($scope.data),
           index = _.findIndex(_data, _.first(_.filter(_data, {country_id: id})));
@@ -257,9 +251,6 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
         // Update data
         $scope.data[index].status = status;
         $scope.data_entry.country.data = $scope.data;
-      }
-      else {
-        console.log(error);
       }
     });
   };
@@ -324,6 +315,7 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
   $scope.filter = {};
   $scope.currentDataRow = null;
   $scope.form = {};
+  $scope.action = null;
   $scope.loading = false;
 
   // Set Page Title
@@ -334,6 +326,98 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
    * DEBOUNCED FUNCTIONS
    ****************************
    */
+
+  /**
+   * Debounced - Close Edit form
+   * 
+   */
+  $scope.debCloseEditData = _.debounce(
+    function() {
+      $('section.awg-panel-edit').fadeOut('fast', function() {
+        $(this).prev('#awg-panel-data-entry-syllabi').show();
+        $scope.currentDataRow = null;
+        $scope.action = null;
+      });
+    }, 
+    $scope.debDuration,
+    $scope.debOptions 
+  );
+
+  /**
+   * Debounced - Save Data
+   * 
+   */
+  $scope.debSaveData = _.debounce(
+    function() {
+      var form = $('section.awg-panel-edit form'),
+        buttons = form.find('.awg-form-button');
+
+      // Validate
+      form.parsley().validate();
+
+      // Check if not Valid
+      if(!form.parsley().isValid()) {
+        return;
+      }
+
+      // Disable Buttons
+      $(buttons).addClass('disabled');
+
+      var params = {
+        description: $scope.form.description,
+        status: $scope.form.status,
+        subjects: _.map(_.filter($scope.form.dataSubjects, {selected: true}), 'subject_id')
+      };
+
+      if(_.isEqual($scope.action, 'edit')) {
+        // Add syllabus_id on update
+        params.id = $scope.currentDataRow.syllabus_id;
+
+        pageService.request('PATCH', 'api/syllabi', params, function(error, data) {
+          if(_.isNull(error)) {
+            var _data = _.clone($scope.data),
+              index = _.findIndex(_data, _.first(_.filter(_data, {syllabus_id: $scope.currentDataRow.syllabus_id})));
+            
+            // Update data
+            $scope.currentDataRow.description = $scope.form.description;
+            $scope.currentDataRow.status = $scope.form.status;
+            $scope.currentDataRow.num_subjects = params.subjects.length;
+
+            $scope.data[index].description = $scope.form.description;
+            $scope.data[index].status = +$scope.form.status;
+            $scope.data[index].num_subjects = params.subjects.length;
+
+            $scope.data_entry.syllabi.data = $scope.data;
+
+            // Notify
+            pageService.notify('Success!', 'Successfully updated data.', 'success');
+          }
+
+          // Enable Buttons
+          $(buttons).removeClass('disabled');
+        });
+      }
+      else if(_.isEqual($scope.action, 'add')) {
+        pageService.request('POST', 'api/syllabi', params, function(error, data) {
+          if(_.isNull(error)) {
+            // Reload Data
+            $scope.getData();
+
+            // Initialize Add form
+            $scope.addData();
+
+            // Notify
+            pageService.notify('Success!', 'Successfully added data.', 'success');
+          }
+
+          // Enable Buttons
+          $(buttons).removeClass('disabled');
+        });
+      }
+    }, 
+    $scope.debDuration,
+    $scope.debOptions 
+  );
 
 
   /**
@@ -364,10 +448,73 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
         $scope.data = _.concat($scope.data, data);
         $scope.data_entry.syllabi.data = $scope.data;
       }
-      else {
-        console.log(error);
-      }
       $scope.loading = false;
+    });
+  };
+
+  /**
+   * Get Data Subjects
+   * 
+   */
+  $scope.getDataSubjects = function() {
+    $scope.form.dataSubjects = [];
+    $scope.form.loading = true;
+
+    async.parallel([
+      function(callback) {
+        var params = {
+          status: 1,
+          fields: 'description'
+        };
+        pageService.request('GET', 'api/subject', params, function(error, data) {
+          if(_.isNull(error)) {
+            callback(null, data);
+          }
+          else {
+            callback(error, null);
+          }
+        });
+      },
+      function(callback) {
+        if(_.isEqual($scope.action, 'edit')) {
+          var params = {
+            status: 1,
+            fields: 'description',
+            syllabi_id: $scope.currentDataRow.syllabus_id
+          };
+          pageService.request('GET', 'api/subject', params, function(error, data) {
+            if(_.isNull(error)) {
+              callback(null, data);
+            }
+            else {
+              callback(error, null);
+            }
+          });
+        }
+        else {
+          callback(null, []);
+        }
+      }
+    ],
+    function(err, results) {
+      $scope.form.loading = false;
+
+      if(err) {
+        console.log(err);
+        return;
+      }
+
+      // Set Subject selected
+      var subjectSelected = _.map(results[1], function(value) {
+          return +value.subject_id;
+        }), 
+        subjectList = _.map(results[0], function(value) {
+          value.subject_id = +value.subject_id;
+          value.selected = _.indexOf(subjectSelected, value.subject_id) != -1 ? true : false;
+          return value;
+        });
+
+      $scope.form.dataSubjects = subjectList;
     });
   };
 
@@ -381,17 +528,26 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
   };
 
   /**
+   * Filter Data from Subject list by form.selected
+   * 
+   * @param string    selected
+   */
+  $scope.filterFormSelected = function(selected) {
+    $scope.form.filter.selected = selected;
+  };
+
+  /**
    * Update Status
    * 
    * @param string    status
    * @param string    id
    */
   $scope.updateStatus = function(status, id) {
-    var data = {
+    var params = {
       id: id,
       status: status
     };
-    pageService.request('PATCH', 'api/syllabi', data, function(error, data) {
+    pageService.request('PATCH', 'api/syllabi', params, function(error, data) {
       if(_.isNull(error)) {
         var _data = _.clone($scope.data),
           index = _.findIndex(_data, _.first(_.filter(_data, {syllabus_id: id})));
@@ -400,9 +556,98 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
         $scope.data[index].status = status;
         $scope.data_entry.syllabi.data = $scope.data;
       }
-      else {
-        console.log(error);
-      }
+    });
+  };
+
+  /**
+   * Initialize Edit form
+   * 
+   * @param object    dataRow
+   */
+  $scope.editData = function(dataRow) {
+    $scope.action = 'edit';
+    $scope.currentDataRow = dataRow;
+    $scope.form.description = dataRow.description;
+    $scope.form.status = dataRow.status.toString();
+    $scope.form.dataSubjects = [];
+    $scope.form.query = '';
+    $scope.form.filter = {};
+    $scope.form.loading = false;
+    $('#awg-panel-data-entry-syllabi').fadeOut('fast', function() {
+      var form = $('section.awg-panel-edit form');
+
+      // Reset Form
+      form.parsley().reset();
+
+      $(this).next('section.awg-panel-edit').show();
+
+      // Get Data Subjects
+      $scope.getDataSubjects();
+    });
+  };
+
+  /**
+   * Initialize Add form
+   * 
+   */
+  $scope.addData = function() {
+    $scope.action = 'add';
+    $scope.form.description = '';
+    $scope.form.status = '';
+    $scope.form.dataSubjects = [];
+    $scope.form.query = '';
+    $scope.form.filter = {};
+    $scope.form.loading = false;
+    $('#awg-panel-data-entry-syllabi').fadeOut('fast', function() {
+      var form = $('section.awg-panel-edit form');
+
+      // Reset Form
+      form.parsley().reset();
+
+      $(this).next('section.awg-panel-edit').show();
+
+      // Get Data Subjects
+      $scope.getDataSubjects();
+    });
+  };
+
+  /**
+   * Close Edit form
+   * 
+   */
+  $scope.closeEditData = function() {
+    $scope.debCloseEditData();
+  };
+
+  /**
+   * Save Data
+   * 
+   */
+  $scope.saveData = function() {
+    $scope.debSaveData();
+  };
+
+  /**
+   * Check/Uncheck Subject
+   * 
+   * @param number    subjectId
+   */
+  $scope.check = function(subjectId) {
+    var _data = _.clone($scope.form.dataSubjects),
+      index = _.findIndex(_data, _.first(_.filter(_data, {subject_id: subjectId}))),
+      selected = $scope.form.dataSubjects[index].selected;
+
+    $scope.form.dataSubjects[index].selected = !selected;
+  };
+
+  /**
+   * Check/Uncheck All Subjects
+   * 
+   * @param number    action[1 = Check All, 0 = Uncheck All]
+   */
+  $scope.checkAll = function(action) {
+    _.each($scope.form.dataSubjects, function(value, key) {
+      value.selected = action ? true : false;
     });
   };
 });
@@ -592,13 +837,13 @@ app.controller('usersCtrl', function($scope, pageService) {
       // Disable Buttons
       $(buttons).addClass('disabled');
 
-      var data = {
+      var params = {
         id: $scope.currentDataRow.account_id,
         account_type: $scope.form.account_type,
         payment_status: $scope.form.payment_status,
         status: $scope.form.status
       };
-      pageService.request('PATCH', 'api/users', data, function(error, data) {
+      pageService.request('PATCH', 'api/users', params, function(error, data) {
         if(_.isNull(error)) {
           var _data = _.clone($scope.data),
             index = _.findIndex(_data, _.first(_.filter(_data, {country_id: $scope.currentDataRow.account_id})));
@@ -614,15 +859,12 @@ app.controller('usersCtrl', function($scope, pageService) {
 
           $scope.users.data = $scope.data;
 
-          // Enable Buttons
-          $(buttons).removeClass('disabled');
-
           // Notify
           pageService.notify('Success!', 'Successfully updated data.', 'success');
         }
-        else {
-          console.log(error);
-        }
+
+        // Enable Buttons
+        $(buttons).removeClass('disabled');
       });
     }, 
     $scope.debDuration,
@@ -657,9 +899,6 @@ app.controller('usersCtrl', function($scope, pageService) {
       if(_.isNull(error)) {
         $scope.data = _.concat($scope.data, data);
         $scope.users.data = $scope.data;
-      }
-      else {
-        console.log(error);
       }
       $scope.loading = false;
     });
@@ -713,11 +952,11 @@ app.controller('usersCtrl', function($scope, pageService) {
    * @param string    id
    */
   $scope.updateStatus = function(status, id) {
-    var data = {
+    var params = {
       id: id,
       status: status
     };
-    pageService.request('PATCH', 'api/users', data, function(error, data) {
+    pageService.request('PATCH', 'api/users', params, function(error, data) {
       if(_.isNull(error)) {
         var _data = _.clone($scope.data),
           index = _.findIndex(_data, _.first(_.filter(_data, {account_id: id})));
@@ -725,9 +964,6 @@ app.controller('usersCtrl', function($scope, pageService) {
         // Update data
         $scope.data[index].status = status;
         $scope.users.data = $scope.data;
-      }
-      else {
-        console.log(error);
       }
     });
   };
@@ -853,24 +1089,23 @@ app.service('pageService', function($http, $state, $sce) {
    */
   this.request = function(method, url, data, callback) {
     var methodVerbs = ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
-      data = _.isUndefined(data) ? {} : data;
+      data = _.isUndefined(data) ? {} : data,
+      _self = this;
 
     if($.inArray(_.toUpper(method), methodVerbs) != -1) {
-      $http[_.toLower(method)](url, data)
+      var config = _.isEqual(_.toUpper(method), 'GET') ? {params: data} : data;
+      $http[_.toLower(method)](url, config)
         .success(function(response) {
           callback(null, response);
         })
         .error(function(errorResponse) {
-          callback(errorResponse, null);
+          _self.notify('Error!', errorResponse.message, 'danger');
+          callback({status: false}, null);
         });
     }
     else {
-      callback({
-        status: false,
-        error: {
-          message: 'Passed method is not a valid HTTP method.'
-        }
-      }, null);
+      this.notify('Error!', 'Passed method is not a valid HTTP method.', 'danger');
+      callback({status: false}, null);
     }
   };
 
@@ -890,7 +1125,11 @@ app.service('pageService', function($http, $state, $sce) {
       title: '<div><strong>' + title + '</strong></div>',
       message: message
     }, {
-      type: type
+      type: type,
+      offset: {
+        y: 60,
+        x: 20
+      }
     })
   };
 });

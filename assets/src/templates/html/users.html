@@ -98,7 +98,7 @@
       </table>
     </div>
   </section>
-  <section class="awg-panel-edit panel panel-default col-sm-4 no-padder animated fadeInLeft" style="display: none;">
+  <section class="awg-panel-edit panel panel-default col-sm-4 col-sm-offset-8 no-padder animated fadeInRight" style="display: none;">
     <header class="panel-heading">Edit User - {{currentDataRow.first_name + ' ' + currentDataRow.surname}}</header>
     <div class="panel-body">
       <form role="form" data-validate="parsley">
@@ -135,7 +135,7 @@
             <option value="0">Inactive</option>
           </select>
         </div>
-        <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData($event)">Save</button>
+        <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData()">Save</button>
         <a href="" class="awg-form-button btn btn-sm btn-danger pull-right" ng-click="closeEditData()">Close</a>
       </form>
     </div>

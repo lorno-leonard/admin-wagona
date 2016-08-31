@@ -25,6 +25,7 @@ class Country extends REST_Controller {
     $id = $this->uri->segment(3);
     $id = !is_null($id) ? $id : $this->get('id');
     $status = !is_null($this->get('status')) && in_array((int) $this->get('status'), array(1, 0)) ? $this->get('status') : null;
+    $fields = !is_null($this->get('fields')) && !empty($this->get('fields'))? $this->get('fields') : null;
     $limit = !is_null($this->get('limit')) && is_numeric($this->get('limit')) ? $this->get('limit') : null;
     $offset = !is_null($this->get('offset')) && is_numeric($this->get('offset')) ? $this->get('offset') : null;
 
@@ -32,6 +33,7 @@ class Country extends REST_Controller {
     $opts = array(
       'id' => $id,
       'status' => $status,
+      'fields' => $fields,
       'limit' => $limit,
       'offset' => $offset
     );
@@ -44,10 +46,8 @@ class Country extends REST_Controller {
     catch(Exception $e) {
       $this->set_response([
         'status' => FALSE,
-        'error' => [
-          'classname' => get_class($e),
-          'message' => $e->getMessage()
-        ]
+        'classname' => get_class($e),
+        'message' => $e->getMessage()
       ], 400);
     }
   }
@@ -76,9 +76,7 @@ class Country extends REST_Controller {
     if(count($data) == 0) {
       $this->set_response([
         'status' => FALSE,
-        'error' => [
-          'message' => 'no parameter passsed.'
-        ]
+        'message' => 'no parameter passsed.'
       ], 400);
       return;
     }
@@ -91,10 +89,8 @@ class Country extends REST_Controller {
     catch(Exception $e) {
       $this->set_response([
         'status' => FALSE,
-        'error' => [
-          'classname' => get_class($e),
-          'message' => $e->getMessage()
-        ]
+        'classname' => get_class($e),
+        'message' => $e->getMessage()
       ], 400);
     }
   }

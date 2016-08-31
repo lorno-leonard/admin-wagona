@@ -1,4 +1,4 @@
-app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
+app.controller('dataEntryCountryCtrl', function($scope, pageService) {
 
   $scope.data = !_.isEmpty($scope.data_entry.country.data) ? $scope.data_entry.country.data : [];
   $scope.filter = {};
@@ -50,12 +50,12 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
       // Disable Buttons
       $(buttons).addClass('disabled');
 
-      var data = {
+      var params = {
         id: $scope.currentDataRow.country_id,
         description: $scope.form.description,
         status: $scope.form.status
       };
-      pageService.request('PATCH', 'api/country', data, function(error, data) {
+      pageService.request('PATCH', 'api/country', params, function(error, data) {
         if(_.isNull(error)) {
           var _data = _.clone($scope.data),
             index = _.findIndex(_data, _.first(_.filter(_data, {country_id: $scope.currentDataRow.country_id})));
@@ -69,15 +69,12 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
 
           $scope.data_entry.country.data = $scope.data;
 
-          // Enable Buttons
-          $(buttons).removeClass('disabled');
-
           // Notify
           pageService.notify('Success!', 'Successfully updated data.', 'success');
         }
-        else {
-          console.log(error);
-        }
+
+        // Enable Buttons
+        $(buttons).removeClass('disabled');
       });
     }, 
     $scope.debDuration,
@@ -113,9 +110,6 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
         $scope.data = _.concat($scope.data, data);
         $scope.data_entry.country.data = $scope.data;
       }
-      else {
-        console.log(error);
-      }
       $scope.loading = false;
     });
   };
@@ -136,11 +130,11 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
    * @param string    id
    */
   $scope.updateStatus = function(status, id) {
-    var data = {
+    var params = {
       id: id,
       status: status
     };
-    pageService.request('PATCH', 'api/country', data, function(error, data) {
+    pageService.request('PATCH', 'api/country', params, function(error, data) {
       if(_.isNull(error)) {
         var _data = _.clone($scope.data),
           index = _.findIndex(_data, _.first(_.filter(_data, {country_id: id})));
@@ -148,9 +142,6 @@ app.controller('dataEntryCountryCtrl', function($scope, $timeout, pageService) {
         // Update data
         $scope.data[index].status = status;
         $scope.data_entry.country.data = $scope.data;
-      }
-      else {
-        console.log(error);
       }
     });
   };

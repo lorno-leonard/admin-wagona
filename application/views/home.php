@@ -177,7 +177,7 @@
       </table>
     </div>
   </section>
-  <section class="awg-panel-edit panel panel-default col-sm-4 no-padder animated fadeInLeft" style="display: none;">
+  <section class="awg-panel-edit panel panel-default col-sm-4 col-sm-offset-8 no-padder animated fadeInRight" style="display: none;">
     <header class="panel-heading">Edit Country - {{currentDataRow.description}}</header>
     <div class="panel-body">
       <form role="form" data-validate="parsley">
@@ -197,7 +197,7 @@
             <option value="0">Inactive</option>
           </select>
         </div>
-        <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData($event)">Save</button>
+        <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData()">Save</button>
         <a href="" class="awg-form-button btn btn-sm btn-danger pull-right" ng-click="closeEditData()">Close</a>
       </form>
     </div>
@@ -245,7 +245,10 @@
   <section id="awg-panel-data-entry-syllabi" class="panel panel-default animated fadeIn" ng-init="init()">
     <header class="panel-heading">
       <span>Syllabi list</span>
-      <button class="btn btn-xs btn-info pull-right" ng-click="getData()">Reload</button>
+      <div class="pull-right">
+        <button class="btn btn-xs btn-primary" ng-click="addData()"><i class="fa fa-plus icon"></i> Add Syllabi</button>
+        <button class="btn btn-xs btn-info" ng-click="getData()">Reload</button>
+      </div>
     </header>
     <div class="row wrapper">
       <div class="col-sm-9 m-b-xs">
@@ -272,20 +275,22 @@
       </div>
     </div>
     <div class="table-responsive">
-      <table id="awg-table-data-entry-syllaby" class="table table-striped m-b-none">
+      <table id="awg-table-data-entry-syllabi" class="table table-striped m-b-none">
         <thead>
           <tr>
-            <th class="col-sm-10">Syllabi</th>
+            <th class="col-sm-8">Syllabi</th>
+            <th class="col-sm-2"># of Subjects</th>
             <th class="col-sm-1">Status</th>
             <th class="col-sm-1"></th>
           </tr>
         </thead>
         <tbody>
           <tr ng-if="loading" class="animated fadeIn">
-            <td colspan="3">Loading records...</td>
+            <td colspan="4">Loading records...</td>
           </tr>
           <tr ng-if="!loading && data.length > 0" ng-repeat="row in filtered_data = (data | filter : query | filter : filter)" class="animated fadeIn">
             <td>{{row.description}}</td>
+            <td>{{row.num_subjects}}</td>
             <td><span ng-class="+row.status ? 'text-primary' : 'text-danger'">{{+row.status ? 'Active' : 'Inactive'}}</span></td>
             <td>
               <a href="" ng-click="updateStatus((+row.status ? 0 : 1), row.syllabus_id)">
@@ -301,6 +306,95 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </section>
+  <section class="awg-panel-edit panel panel-default col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-2 no-padder animated fadeInRight" style="display: none;">
+    <header class="panel-heading">{{_.isEqual(action, 'edit') ? 'Edit Syllabi - ' + currentDataRow.description : 'Add Syllabi'}}</header>
+    <div class="panel-body">
+      <form role="form" data-validate="parsley">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" class="form-control" ng-model="form.description" data-required="true">
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select type="text" class="form-control" ng-model="form.status" data-required="true">
+                <option value="">- Select Status -</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-8">
+            <section class="panel panel-default">
+              <header class="panel-heading">
+                <span>Select Subject(s)</span>
+                <div class="pull-right">
+                  <a href="" class="btn btn-xs btn-info" ng-click="getDataSubjects()">Reload</a>
+                </div>
+              </header>
+              <div class="row wrapper">
+                <div class="col-sm-4 m-b-xs">
+                  <span class="m-b-xs">Filter: </span>
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-sm btn-default active" ng-click="filterFormSelected('')">
+                      <input type="radio" ng-model="form.selected"> <span>All</span>
+                    </label>
+                    <label class="btn btn-sm btn-default" ng-click="filterFormSelected(true)">
+                      <input type="radio" ng-model="form.selected"> <span><i class="fa fa-check icon"></i></span>
+                    </label>
+                    <label class="btn btn-sm btn-default" ng-click="filterFormSelected(false)">
+                      <input type="radio" ng-model="form.selected"> <span><i class="fa fa-square-o icon"></i></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-3 m-b-xs">
+                  <div class="btn-group">
+                    <a href="" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="" ng-click="checkAll(1)"><i class="fa fa-check icon"></i> Check All</a></li>
+                      <li><a href="" ng-click="checkAll(0)"><i class="fa fa-square-o icon"></i> UnCheck All</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-sm-5">
+                  <div class="input-group">
+                    <input type="text" class="input-sm form-control" placeholder="Search" ng-model="form.query">
+                    <span class="input-group-btn">
+                      <button class="btn btn-sm btn-icon" type="button"><i class="fa fa-search icon"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped m-b-none">
+                  <tbody>
+                    <tr ng-if="form.loading" class="animated fadeIn">
+                      <td colspan="2">Loading records...</td>
+                    </tr>
+                    <tr ng-if="!form.loading && form.dataSubjects.length > 0" ng-repeat="row in filtered_data = (form.dataSubjects | filter : form.query | filter : form.filter)"  ng-click="check(row.subject_id)" class="awg-cursor-pointer animated fadeIn">
+                      <td class="col-xs-1" ng-if="row.selected"><i class="fa fa-check icon text-primary"></i></td>
+                      <td class="col-xs-1" ng-if="!row.selected"></td>
+                      <td class="col-xs-10">{{row.description}}</td>
+                    </tr>
+                    <tr ng-if="!form.loading && filtered_data.length == 0" class="animated fadeIn">
+                      <td colspan="2">No record found</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData()">Save</button>
+            <a href="" class="awg-form-button btn btn-sm btn-danger pull-right" ng-click="closeEditData()">Close</a>
+          </div>
+        </div>
+      </form>
     </div>
   </section>
   </script>
@@ -447,7 +541,7 @@
       </table>
     </div>
   </section>
-  <section class="awg-panel-edit panel panel-default col-sm-4 no-padder animated fadeInLeft" style="display: none;">
+  <section class="awg-panel-edit panel panel-default col-sm-4 col-sm-offset-8 no-padder animated fadeInRight" style="display: none;">
     <header class="panel-heading">Edit User - {{currentDataRow.first_name + ' ' + currentDataRow.surname}}</header>
     <div class="panel-body">
       <form role="form" data-validate="parsley">
@@ -484,7 +578,7 @@
             <option value="0">Inactive</option>
           </select>
         </div>
-        <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData($event)">Save</button>
+        <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData()">Save</button>
         <a href="" class="awg-form-button btn btn-sm btn-danger pull-right" ng-click="closeEditData()">Close</a>
       </form>
     </div>

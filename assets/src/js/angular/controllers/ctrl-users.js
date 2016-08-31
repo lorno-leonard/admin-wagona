@@ -51,13 +51,13 @@ app.controller('usersCtrl', function($scope, pageService) {
       // Disable Buttons
       $(buttons).addClass('disabled');
 
-      var data = {
+      var params = {
         id: $scope.currentDataRow.account_id,
         account_type: $scope.form.account_type,
         payment_status: $scope.form.payment_status,
         status: $scope.form.status
       };
-      pageService.request('PATCH', 'api/users', data, function(error, data) {
+      pageService.request('PATCH', 'api/users', params, function(error, data) {
         if(_.isNull(error)) {
           var _data = _.clone($scope.data),
             index = _.findIndex(_data, _.first(_.filter(_data, {country_id: $scope.currentDataRow.account_id})));
@@ -73,15 +73,12 @@ app.controller('usersCtrl', function($scope, pageService) {
 
           $scope.users.data = $scope.data;
 
-          // Enable Buttons
-          $(buttons).removeClass('disabled');
-
           // Notify
           pageService.notify('Success!', 'Successfully updated data.', 'success');
         }
-        else {
-          console.log(error);
-        }
+
+        // Enable Buttons
+        $(buttons).removeClass('disabled');
       });
     }, 
     $scope.debDuration,
@@ -116,9 +113,6 @@ app.controller('usersCtrl', function($scope, pageService) {
       if(_.isNull(error)) {
         $scope.data = _.concat($scope.data, data);
         $scope.users.data = $scope.data;
-      }
-      else {
-        console.log(error);
       }
       $scope.loading = false;
     });
@@ -172,11 +166,11 @@ app.controller('usersCtrl', function($scope, pageService) {
    * @param string    id
    */
   $scope.updateStatus = function(status, id) {
-    var data = {
+    var params = {
       id: id,
       status: status
     };
-    pageService.request('PATCH', 'api/users', data, function(error, data) {
+    pageService.request('PATCH', 'api/users', params, function(error, data) {
       if(_.isNull(error)) {
         var _data = _.clone($scope.data),
           index = _.findIndex(_data, _.first(_.filter(_data, {account_id: id})));
@@ -184,9 +178,6 @@ app.controller('usersCtrl', function($scope, pageService) {
         // Update data
         $scope.data[index].status = status;
         $scope.users.data = $scope.data;
-      }
-      else {
-        console.log(error);
       }
     });
   };

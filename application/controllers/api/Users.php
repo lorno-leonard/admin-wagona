@@ -40,6 +40,7 @@ class Users extends REST_Controller {
     $status = !is_null($this->get('status')) && in_array((int) $this->get('status'), array(1, 0)) ? $this->get('status') : null;
     $account_type = !is_null($this->get('account_type')) && in_array($this->get('account_type'), array('PAID-ACCOUNT', 'FREE_ACCOUNT')) ? $this->get('account_type') : null;
     $payment_status = !is_null($this->get('payment_status')) && in_array($this->get('payment_status'), array('COMPLETE', 'NOT-COMPLETE', 'WAIVED')) ? $this->get('payment_status') : null;
+    $fields = !is_null($this->get('fields')) && !empty($this->get('fields'))? $this->get('fields') : null;
     $limit = !is_null($this->get('limit')) && is_numeric($this->get('limit')) ? $this->get('limit') : null;
     $offset = !is_null($this->get('offset')) && is_numeric($this->get('offset')) ? $this->get('offset') : null;
 
@@ -49,6 +50,7 @@ class Users extends REST_Controller {
       'status' => $status,
       'account_type' => $account_type,
       'payment_status' => $payment_status,
+      'fields' => $fields,
       'limit' => $limit,
       'offset' => $offset
     );
@@ -61,10 +63,8 @@ class Users extends REST_Controller {
     catch(Exception $e) {
       $this->set_response([
         'status' => FALSE,
-        'error' => [
-          'classname' => get_class($e),
-          'message' => $e->getMessage()
-        ]
+        'classname' => get_class($e),
+        'message' => $e->getMessage()
       ], 500);
     }
   }
@@ -95,9 +95,7 @@ class Users extends REST_Controller {
     if(count($data) == 0) {
       $this->set_response([
         'status' => FALSE,
-        'error' => [
-          'message' => 'no parameter passsed.'
-        ]
+        'message' => 'no parameter passsed.'
       ], 400);
       return;
     }
@@ -110,10 +108,8 @@ class Users extends REST_Controller {
     catch(Exception $e) {
       $this->set_response([
         'status' => FALSE,
-        'error' => [
-          'classname' => get_class($e),
-          'message' => $e->getMessage()
-        ]
+        'classname' => get_class($e),
+        'message' => $e->getMessage()
       ], 400);
     }
   }

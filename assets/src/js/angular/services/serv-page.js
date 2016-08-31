@@ -64,24 +64,23 @@ app.service('pageService', function($http, $state, $sce) {
    */
   this.request = function(method, url, data, callback) {
     var methodVerbs = ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
-      data = _.isUndefined(data) ? {} : data;
+      data = _.isUndefined(data) ? {} : data,
+      _self = this;
 
     if($.inArray(_.toUpper(method), methodVerbs) != -1) {
-      $http[_.toLower(method)](url, data)
+      var config = _.isEqual(_.toUpper(method), 'GET') ? {params: data} : data;
+      $http[_.toLower(method)](url, config)
         .success(function(response) {
           callback(null, response);
         })
         .error(function(errorResponse) {
-          callback(errorResponse, null);
+          _self.notify('Error!', errorResponse.message, 'danger');
+          callback({status: false}, null);
         });
     }
     else {
-      callback({
-        status: false,
-        error: {
-          message: 'Passed method is not a valid HTTP method.'
-        }
-      }, null);
+      this.notify('Error!', 'Passed method is not a valid HTTP method.', 'danger');
+      callback({status: false}, null);
     }
   };
 
@@ -101,7 +100,11 @@ app.service('pageService', function($http, $state, $sce) {
       title: '<div><strong>' + title + '</strong></div>',
       message: message
     }, {
-      type: type
+      type: type,
+      offset: {
+        y: 60,
+        x: 20
+      }
     })
   };
 });

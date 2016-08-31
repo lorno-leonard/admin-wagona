@@ -12672,7 +12672,11 @@ fieldset[disabled] .btn-gplus.active {
   font-weight: bold;
 }
 div.table-responsive {
-  min-height: 300px;
+  height: 300px;
+  overflow: auto;
+}
+.alert {
+  font-size: 1em;
 }
 [ng\:cloak],
 [ng-cloak],
@@ -12689,6 +12693,12 @@ div.table-responsive {
   right: 2em;
   display: none;
 }
-.alert {
-  font-size: 1em;
+.awg-cursor-pointer {
+  cursor: pointer;
+}
+/*phone*/
+@media (max-width: 767px) {
+  .awg-panel-edit-list-column {
+    padding: 0 !important;
+  }
 }

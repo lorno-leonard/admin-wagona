@@ -16,7 +16,13 @@ class Users_model extends CI_Model {
    */
   public function get($opts) {
     // Default fields
-    $fields = array('account_id', 'first_name', 'surname', 'account_type', 'payment_status', 'status');
+    $fields = array('first_name', 'surname', 'account_type', 'payment_status', 'status');
+
+    // Filter fields to display if any
+    if(!is_null($opts['fields'])) {
+      $fields = array_intersect(explode(',', $opts['fields']), $fields);
+    }
+    $fields[] = 'account_id';
 
     // Limit, Offset
     $limit = !is_null($opts['limit']) ? $opts['limit'] : null;
@@ -39,7 +45,7 @@ class Users_model extends CI_Model {
     // Execute Query
     $this->db->select(implode(', ', $fields));
     $this->db->from('user_accounts');
-    $this->db->order_by('account_id', 'ASC');
+    $this->db->order_by('first_name', 'ASC');
     if(!is_null($limit)) {
       if(!is_null($offset)) $this->db->limit($limit, $offset);
       else $this->db->limit($limit);
