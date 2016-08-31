@@ -39,7 +39,7 @@ class Country_model extends CI_Model {
     // Execute Query
     $this->db->select(implode(', ', $fields));
     $this->db->from('country_list');
-    $this->db->order_by('description', 'ASC');
+    $this->db->order_by('country_id', 'ASC');
     if(!is_null($limit)) {
       if(!is_null($offset)) $this->db->limit($limit, $offset);
       else $this->db->limit($limit);
