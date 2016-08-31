@@ -57,4 +57,53 @@ class Subject_model extends CI_Model {
 
     return $query->result_array();
   }
+
+  /**
+   * Create subject
+   *
+   * @param array $data
+   *
+   * @return number       insert id
+   */
+  public function post($data) {
+    $this->db->insert('test_subject', $data);
+    return $this->db->insert_id();
+  }
+
+  /**
+   * Update subject
+   *
+   * @param array $data     columns to update
+   * @param number $id      record id
+   */
+  public function update($data, $id) {
+    $this->db->where('subject_id', $id);
+    $this->db->update('test_subject', $data);
+    return;
+  }
+
+  /**
+   * Check subject
+   *
+   * @param array $data
+   * @param number $id
+   *
+   * @return string         error message
+   */
+  public function check($data, $id = null) {
+    // Check Description
+    if(isset($data['description'])) {
+      $this->db->like('description', $data['description']);
+      $this->db->from('test_subject');
+      if(!is_null($id)) {
+        $this->db->where('subject_id !=', $id);
+      }
+      $count = $this->db->count_all_results();
+      if($count > 0) {
+        return 'Subject description is already taken.';
+      }
+    }
+
+    return '';
+  }
 }

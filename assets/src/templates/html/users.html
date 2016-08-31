@@ -13,10 +13,10 @@
             <input type="radio" ng-model="status"> <span>All</span>
           </label>
           <label class="btn btn-sm btn-default" ng-click="filterAccountType('PAID-ACCOUNT')">
-            <input type="radio" ng-model="status"> <span>PAID</span>
+            <input type="radio" ng-model="status"> <span class="text-warning">PAID</span>
           </label>
           <label class="btn btn-sm btn-default" ng-click="filterAccountType('FREE-ACCOUNT')">
-            <input type="radio" ng-model="status"> <span>FREE</span>
+            <input type="radio" ng-model="status"> <span class="text-info">FREE</span>
           </label>
         </div>
       </div>
@@ -79,7 +79,7 @@
           <tr ng-if="!loading && data.length > 0" ng-repeat="row in filtered_data = (data | filter : query | filter : filter | filter : filterPaymentStatus)" class="animated fadeIn">
             <td>{{row.first_name}}</td>
             <td>{{row.surname}}</td>
-            <td>{{_.isEqual(row.account_type, 'PAID-ACCOUNT') ? 'PAID' : 'FREE'}}</td>
+            <td><span ng-class="_.isEqual(row.account_type, 'PAID-ACCOUNT') ? 'text-warning' : 'text-info'">{{_.isEqual(row.account_type, 'PAID-ACCOUNT') ? 'PAID' : 'FREE'}}</span></td>
             <td>{{_.isEqual(row.payment_status, 'NOT-COMPLETE') ? 'INCOMPLETE' : row.payment_status}}</td>
             <td><span ng-class="+row.status ? 'text-primary' : 'text-danger'">{{+row.status ? 'Active' : 'Inactive'}}</span></td>
             <td>

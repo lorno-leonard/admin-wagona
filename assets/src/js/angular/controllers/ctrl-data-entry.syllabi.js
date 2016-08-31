@@ -152,8 +152,7 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
     async.parallel([
       function(callback) {
         var params = {
-          status: 1,
-          fields: 'description'
+          fields: 'description,status'
         };
         pageService.request('GET', 'api/subject', params, function(error, data) {
           if(_.isNull(error)) {
@@ -167,8 +166,7 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
       function(callback) {
         if(_.isEqual($scope.action, 'edit')) {
           var params = {
-            status: 1,
-            fields: 'description',
+            fields: 'description,status',
             syllabi_id: $scope.currentDataRow.syllabus_id
           };
           pageService.request('GET', 'api/subject', params, function(error, data) {
@@ -214,6 +212,15 @@ app.controller('dataEntrySyllabiCtrl', function($scope, pageService) {
    */
   $scope.filterStatus = function(status) {
     $scope.filter.status = status;
+  };
+
+  /**
+   * Filter Data from Subject list by form.status
+   * 
+   * @param string    status
+   */
+  $scope.filterFormStatus = function(status) {
+    $scope.form.filter.status = status;
   };
 
   /**

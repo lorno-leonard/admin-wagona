@@ -236,7 +236,177 @@
   
   <!-- Data Entry - Subject Template -->
   <script type="text/ng-template" id="data-entry.subject.html">
-
+  <section id="awg-panel-data-entry-subject" class="panel panel-default animated fadeIn" ng-init="init()">
+    <header class="panel-heading">
+      <span>Subject list</span>
+      <div class="pull-right">
+        <button class="btn btn-xs btn-primary" ng-click="addData()"><i class="fa fa-plus icon"></i> Add Subject</button>
+        <button class="btn btn-xs btn-info" ng-click="getData()">Reload</button>
+      </div>
+    </header>
+    <div class="row wrapper">
+      <div class="col-sm-9 m-b-xs">
+        <div class="m-b-xs">Status: </div>
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-sm btn-default active" ng-click="filterStatus('')">
+            <input type="radio" ng-model="status"> <span>All</span>
+          </label>
+          <label class="btn btn-sm btn-default" ng-click="filterStatus(1)">
+            <input type="radio" ng-model="status"> <span class="text-primary">Active</span>
+          </label>
+          <label class="btn btn-sm btn-default" ng-click="filterStatus(0)">
+            <input type="radio" ng-model="status"> <span class="text-danger">Inactive</span>
+          </label>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="input-group">
+          <input type="text" class="input-sm form-control" placeholder="Search" ng-model="query">
+          <span class="input-group-btn">
+            <button class="btn btn-sm btn-icon" type="button"><i class="fa fa-search icon"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table id="awg-table-data-entry-subject" class="table table-striped m-b-none">
+        <thead>
+          <tr>
+            <th class="col-sm-8">Subject</th>
+            <th class="col-sm-2"># of Topics</th>
+            <th class="col-sm-1">Status</th>
+            <th class="col-sm-1"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="loading" class="animated fadeIn">
+            <td colspan="4">Loading records...</td>
+          </tr>
+          <tr ng-if="!loading && data.length > 0" ng-repeat="row in filtered_data = (data | filter : query | filter : filter)" class="animated fadeIn">
+            <td>{{row.description}}</td>
+            <td>{{row.num_topics}}</td>
+            <td><span ng-class="+row.status ? 'text-primary' : 'text-danger'">{{+row.status ? 'Active' : 'Inactive'}}</span></td>
+            <td>
+              <a href="" ng-click="updateStatus((+row.status ? 0 : 1), row.subject_id)">
+                <i class="fa fa-lg icon" ng-class="+row.status ? 'fa-times text-danger' : 'fa-check text-primary'"></i>
+              </a>
+              <a href="" class="m-l-sm" ng-click="editData(row)">
+                <i class="fa fa-lg fa-pencil icon text-info"></i>
+              </a>
+            </td>
+          </tr>
+          <tr ng-if="!loading && filtered_data.length == 0" class="animated fadeIn">
+            <td colspan="4">No record found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="awg-panel-edit panel panel-default col-sm-12 no-padder animated fadeInRight" style="display: none;">
+    <header class="panel-heading">{{_.isEqual(action, 'edit') ? 'Edit Subject - ' + currentDataRow.description : 'Add Subject'}}</header>
+    <div class="panel-body">
+      <form role="form" data-validate="parsley">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" class="form-control" ng-model="form.description" data-required="true">
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select type="text" class="form-control" ng-model="form.status" data-required="true">
+                <option value="">- Select Status -</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-8">
+            <section class="panel panel-default">
+              <header class="panel-heading">
+                <span>Select Topic(s)</span>
+                <div class="pull-right">
+                  <a href="" class="btn btn-xs btn-info" ng-click="getDataTopics()">Reload</a>
+                </div>
+              </header>
+              <div class="row wrapper">
+                <div class="col-sm-2 m-b-xs">
+                  <div class="m-b-xs">Filter: </div>
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-xs btn-default active" ng-click="filterFormSelected('')">
+                      <input type="radio" ng-model="form.selected"> <span>All</span>
+                    </label>
+                    <label class="btn btn-xs btn-default" ng-click="filterFormSelected(true)">
+                      <input type="radio" ng-model="form.selected"> <span><i class="fa fa-check icon"></i></span>
+                    </label>
+                    <label class="btn btn-xs btn-default" ng-click="filterFormSelected(false)">
+                      <input type="radio" ng-model="form.selected"> <span><i class="fa fa-square-o icon"></i></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-3 m-b-xs">
+                  <div class="m-b-xs">Status: </div>
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-xs btn-default active" ng-click="filterFormStatus('')">
+                      <input type="radio" ng-model="status"> <span>All</span>
+                    </label>
+                    <label class="btn btn-xs btn-default" ng-click="filterFormStatus(1)">
+                      <input type="radio" ng-model="status"> <span class="text-primary">Active</span>
+                    </label>
+                    <label class="btn btn-xs btn-default" ng-click="filterFormStatus(0)">
+                      <input type="radio" ng-model="status"> <span class="text-danger">Inactive</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-2 m-b-xs">
+                  <div class="btn-group">
+                    <a href="" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="" ng-click="checkAll(1)"><i class="fa fa-check icon"></i> Check All</a></li>
+                      <li><a href="" ng-click="checkAll(0)"><i class="fa fa-square-o icon"></i> UnCheck All</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-sm-5">
+                  <div class="input-group">
+                    <input type="text" class="input-sm form-control" placeholder="Search" ng-model="form.query">
+                    <span class="input-group-btn">
+                      <button class="btn btn-sm btn-icon" type="button"><i class="fa fa-search icon"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped m-b-none">
+                  <tbody>
+                    <tr ng-if="form.loading" class="animated fadeIn">
+                      <td colspan="2">Loading records...</td>
+                    </tr>
+                    <tr ng-if="!form.loading && form.dataTopics.length > 0" ng-repeat="row in filtered_data = (form.dataTopics | filter : form.query | filter : form.filter)" ng-click="check(row.topic_id)" class="awg-cursor-pointer animated fadeIn">
+                      <td class="col-xs-1" ng-if="row.selected"><i class="fa fa-check icon text-primary"></i></td>
+                      <td class="col-xs-1" ng-if="!row.selected"></td>
+                      <td class="col-xs-7">{{row.description}}</td>
+                      <td class="col-xs-1"><span ng-class="+row.is_paid ? 'text-warning' : 'text-info'">{{+row.is_paid ? 'PAID' : 'FREE'}}</span></td>
+                      <td class="col-xs-2"><span ng-class="+row.status ? 'text-primary' : 'text-danger'">{{+row.status ? 'Active' : 'Inactive'}}</span></td>
+                    </tr>
+                    <tr ng-if="!form.loading && filtered_data.length == 0" class="animated fadeIn">
+                      <td colspan="2">No record found</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <button type="submit" class="awg-form-button btn btn-sm btn-primary" ng-click="saveData()">Save</button>
+            <a href="" class="awg-form-button btn btn-sm btn-danger pull-right" ng-click="closeEditData()">Close</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
   </script>
   <!-- /Data Entry - Subject Template -->
   
@@ -308,7 +478,7 @@
       </table>
     </div>
   </section>
-  <section class="awg-panel-edit panel panel-default col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-2 no-padder animated fadeInRight" style="display: none;">
+  <section class="awg-panel-edit panel panel-default col-sm-12 no-padder animated fadeInRight" style="display: none;">
     <header class="panel-heading">{{_.isEqual(action, 'edit') ? 'Edit Syllabi - ' + currentDataRow.description : 'Add Syllabi'}}</header>
     <div class="panel-body">
       <form role="form" data-validate="parsley">
@@ -336,21 +506,35 @@
                 </div>
               </header>
               <div class="row wrapper">
-                <div class="col-sm-4 m-b-xs">
-                  <span class="m-b-xs">Filter: </span>
+                <div class="col-sm-2 m-b-xs">
+                  <div class="m-b-xs">Filter: </div>
                   <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-sm btn-default active" ng-click="filterFormSelected('')">
+                    <label class="btn btn-xs btn-default active" ng-click="filterFormSelected('')">
                       <input type="radio" ng-model="form.selected"> <span>All</span>
                     </label>
-                    <label class="btn btn-sm btn-default" ng-click="filterFormSelected(true)">
+                    <label class="btn btn-xs btn-default" ng-click="filterFormSelected(true)">
                       <input type="radio" ng-model="form.selected"> <span><i class="fa fa-check icon"></i></span>
                     </label>
-                    <label class="btn btn-sm btn-default" ng-click="filterFormSelected(false)">
+                    <label class="btn btn-xs btn-default" ng-click="filterFormSelected(false)">
                       <input type="radio" ng-model="form.selected"> <span><i class="fa fa-square-o icon"></i></span>
                     </label>
                   </div>
                 </div>
                 <div class="col-sm-3 m-b-xs">
+                  <div class="m-b-xs">Status: </div>
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-xs btn-default active" ng-click="filterFormStatus('')">
+                      <input type="radio" ng-model="status"> <span>All</span>
+                    </label>
+                    <label class="btn btn-xs btn-default" ng-click="filterFormStatus(1)">
+                      <input type="radio" ng-model="status"> <span class="text-primary">Active</span>
+                    </label>
+                    <label class="btn btn-xs btn-default" ng-click="filterFormStatus(0)">
+                      <input type="radio" ng-model="status"> <span class="text-danger">Inactive</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-2 m-b-xs">
                   <div class="btn-group">
                     <a href="" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -374,10 +558,11 @@
                     <tr ng-if="form.loading" class="animated fadeIn">
                       <td colspan="2">Loading records...</td>
                     </tr>
-                    <tr ng-if="!form.loading && form.dataSubjects.length > 0" ng-repeat="row in filtered_data = (form.dataSubjects | filter : form.query | filter : form.filter)"  ng-click="check(row.subject_id)" class="awg-cursor-pointer animated fadeIn">
+                    <tr ng-if="!form.loading && form.dataSubjects.length > 0" ng-repeat="row in filtered_data = (form.dataSubjects | filter : form.query | filter : form.filter)" ng-click="check(row.subject_id)" class="awg-cursor-pointer animated fadeIn">
                       <td class="col-xs-1" ng-if="row.selected"><i class="fa fa-check icon text-primary"></i></td>
                       <td class="col-xs-1" ng-if="!row.selected"></td>
-                      <td class="col-xs-10">{{row.description}}</td>
+                      <td class="col-xs-8">{{row.description}}</td>
+                      <td class="col-xs-2"><span ng-class="+row.status ? 'text-primary' : 'text-danger'">{{+row.status ? 'Active' : 'Inactive'}}</span></td>
                     </tr>
                     <tr ng-if="!form.loading && filtered_data.length == 0" class="animated fadeIn">
                       <td colspan="2">No record found</td>
@@ -456,10 +641,10 @@
             <input type="radio" ng-model="status"> <span>All</span>
           </label>
           <label class="btn btn-sm btn-default" ng-click="filterAccountType('PAID-ACCOUNT')">
-            <input type="radio" ng-model="status"> <span>PAID</span>
+            <input type="radio" ng-model="status"> <span class="text-warning">PAID</span>
           </label>
           <label class="btn btn-sm btn-default" ng-click="filterAccountType('FREE-ACCOUNT')">
-            <input type="radio" ng-model="status"> <span>FREE</span>
+            <input type="radio" ng-model="status"> <span class="text-info">FREE</span>
           </label>
         </div>
       </div>
@@ -522,7 +707,7 @@
           <tr ng-if="!loading && data.length > 0" ng-repeat="row in filtered_data = (data | filter : query | filter : filter | filter : filterPaymentStatus)" class="animated fadeIn">
             <td>{{row.first_name}}</td>
             <td>{{row.surname}}</td>
-            <td>{{_.isEqual(row.account_type, 'PAID-ACCOUNT') ? 'PAID' : 'FREE'}}</td>
+            <td><span ng-class="_.isEqual(row.account_type, 'PAID-ACCOUNT') ? 'text-warning' : 'text-info'">{{_.isEqual(row.account_type, 'PAID-ACCOUNT') ? 'PAID' : 'FREE'}}</span></td>
             <td>{{_.isEqual(row.payment_status, 'NOT-COMPLETE') ? 'INCOMPLETE' : row.payment_status}}</td>
             <td><span ng-class="+row.status ? 'text-primary' : 'text-danger'">{{+row.status ? 'Active' : 'Inactive'}}</span></td>
             <td>

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class SyllabiSubject_model extends CI_Model {
+class Syllabisubject_model extends CI_Model {
 
   function __construct() {
     parent::__construct();
