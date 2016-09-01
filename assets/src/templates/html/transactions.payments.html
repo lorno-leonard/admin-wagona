@@ -1,6 +1,65 @@
   <!-- Transactions - Payments Template -->
   <script type="text/ng-template" id="transactions.payments.html">
-
+  <section id="awg-panel-transactions-payments" class="panel panel-default animated fadeIn" ng-init="init()">
+    <header class="panel-heading">
+      <span>Payment list</span>
+      <button class="btn btn-xs btn-info pull-right" ng-click="getData()">Reload</button>
+    </header>
+    <div class="row wrapper">
+      <div class="col-sm-9 m-b-xs">
+        <span class="m-b-xs">Payer: </span>
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-sm btn-default active" ng-click="filterPayer('')">
+            <input type="radio" ng-model="status"> <span>All</span>
+          </label>
+          <label class="btn btn-sm btn-default" ng-click="filterPayer('WAGONA INDIVIDUAL SUBSCRIPTION')">
+            <input type="radio" ng-model="status"> <span class="text-info">Individual</span>
+          </label>
+          <label class="btn btn-sm btn-default" ng-click="filterPayer('WAGONA SCHOOL SUBSCRIPTION')">
+            <input type="radio" ng-model="status"> <span class="text-primary">School</span>
+          </label>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="input-group">
+          <input type="text" class="input-sm form-control" placeholder="Search" ng-model="query">
+          <span class="input-group-btn">
+            <button class="btn btn-sm btn-icon" type="button"><i class="fa fa-search icon"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table id="awg-table-transactions-payments" class="table table-striped m-b-none">
+        <thead>
+          <tr>
+            <th class="col-sm-3">Name</th>
+            <th class="col-sm-3">Payer</th>
+            <th class="col-sm-1">Currency</th>
+            <th class="col-sm-1">Gross</th>
+            <th class="col-sm-1">Fee</th>
+            <th class="col-sm-3">Payment Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="loading" class="animated fadeIn">
+            <td colspan="4">Loading records...</td>
+          </tr>
+          <tr ng-if="!loading && data.length > 0" ng-repeat="row in filtered_data = (data | filter : query | filter : filter)" class="animated fadeIn">
+            <td>{{row.first_name + ' ' + row.last_name}}</td>
+            <td><span ng-class="_.includes(row.item_name, 'INDIVIDUAL') ? 'text-info' : 'text-primary'">{{_.includes(row.item_name, 'INDIVIDUAL') ? 'Individual' : 'School'}}</span></td>
+            <td>{{row.mc_currency}}</td>
+            <td>{{row.payment_gross}}</td>
+            <td>{{row.payment_fee}}</td>
+            <td>{{row.payment_date}}</td>
+          </tr>
+          <tr ng-if="!loading && filtered_data.length == 0" class="animated fadeIn">
+            <td colspan="4">No record found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
   </script>
   <!-- /Transactions - Payments Template -->
   

@@ -11,14 +11,20 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
     syllabi: {
       data: []
     },
-    subject: {},
+    subject: {
+      data: []
+    },
     topic: {},
     question: {}
   };
   $scope.users = {
     data: []
   };
-  $scope.transactions = {};
+  $scope.transactions = {
+    payments: {
+      data: []
+    }
+  };
 
   // Debounce variables
   $scope.debDuration = 500;

@@ -63,3 +63,5 @@ $route['api'] = 'docs';
 $route['api/users/(:num)'] = 'api/users';
 $route['api/country/(:any)'] = 'api/country';
 $route['api/syllabi/(:any)'] = 'api/syllabi';
+$route['api/subject/(:any)'] = 'api/subject';
+$route['api/payments/(:any)'] = 'api/payments';
