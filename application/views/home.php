@@ -659,7 +659,7 @@
         </thead>
         <tbody>
           <tr ng-if="loading" class="animated fadeIn">
-            <td colspan="4">Loading records...</td>
+            <td colspan="6">Loading records...</td>
           </tr>
           <tr ng-if="!loading && data.length > 0" ng-repeat="row in filtered_data = (data | filter : query | filter : filter)" class="animated fadeIn">
             <td>{{row.first_name + ' ' + row.last_name}}</td>
@@ -670,7 +670,7 @@
             <td>{{row.payment_date}}</td>
           </tr>
           <tr ng-if="!loading && filtered_data.length == 0" class="animated fadeIn">
-            <td colspan="4">No record found</td>
+            <td colspan="6">No record found</td>
           </tr>
         </tbody>
       </table>
