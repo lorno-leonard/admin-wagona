@@ -665,8 +665,8 @@
             <td>{{row.first_name + ' ' + row.last_name}}</td>
             <td><span ng-class="_.includes(row.item_name, 'INDIVIDUAL') ? 'text-info' : 'text-primary'">{{_.includes(row.item_name, 'INDIVIDUAL') ? 'Individual' : 'School'}}</span></td>
             <td>{{row.mc_currency}}</td>
-            <td>{{row.payment_gross}}</td>
-            <td>{{row.payment_fee}}</td>
+            <td>{{_.isEqual(+row.payment_gross, _.round(+row.payment_gross)) ? +row.payment_gross : (+row.payment_gross).toFixed(2)}}</td>
+            <td>{{_.isEqual(+row.payment_fee, _.round(+row.payment_fee)) ? +row.payment_fee : (+row.payment_fee).toFixed(2)}}</td>
             <td>{{row.payment_date}}</td>
           </tr>
           <tr ng-if="!loading && filtered_data.length == 0" class="animated fadeIn">
