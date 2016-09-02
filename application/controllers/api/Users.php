@@ -91,7 +91,7 @@ class Users extends REST_Controller {
     if(!is_null($paymentStatus)) $data['payment_status'] = $paymentStatus;
     if(!is_null($status)) $data['status'] = $status;
 
-    // Check if $status is null
+    // Check if there's no data to be updated
     if(count($data) == 0) {
       $this->set_response([
         'status' => FALSE,

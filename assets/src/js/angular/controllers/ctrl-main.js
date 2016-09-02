@@ -23,6 +23,9 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
   $scope.transactions = {
     payments: {
       data: []
+    },
+    prices: {
+      data: []
     }
   };
 
