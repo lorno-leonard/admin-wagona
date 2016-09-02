@@ -36,7 +36,7 @@ class Payments_model extends CI_Model {
     // Execute Query
     $this->db->select(implode(', ', $fields));
     $this->db->from('paypal_ipn_payment');
-    $this->db->order_by('payment_date', 'DESC');
+    $this->db->order_by('date_added', 'DESC');
     if(!is_null($limit)) {
       if(!is_null($offset)) $this->db->limit($limit, $offset);
       else $this->db->limit($limit);
