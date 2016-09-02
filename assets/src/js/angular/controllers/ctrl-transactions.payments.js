@@ -5,7 +5,7 @@ app.controller('transactionsPaymentsCtrl', function($scope, pageService) {
   $scope.loading = false;
 
   // Set Page Title
-  pageService.setPageTitle('Payments', 'fa fa-credit-card icon');
+  pageService.setPageTitle('Payments', 'fa fa-cc-paypal icon');
 
   /**
    ****************************

@@ -1086,7 +1086,7 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
     'ui-sref': 'transactions',
     menus: [{
       title: 'Payments',
-      iconClass: 'fa fa-credit-card icon',
+      iconClass: 'fa fa-cc-paypal icon',
       'ui-sref': 'transactions-payments'
     }, {
       title: 'Subscription Prices',
@@ -1138,7 +1138,7 @@ app.controller('transactionsPaymentsCtrl', function($scope, pageService) {
   $scope.loading = false;
 
   // Set Page Title
-  pageService.setPageTitle('Payments', 'fa fa-credit-card icon');
+  pageService.setPageTitle('Payments', 'fa fa-cc-paypal icon');
 
   /**
    ****************************

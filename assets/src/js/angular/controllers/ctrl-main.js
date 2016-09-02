@@ -77,7 +77,7 @@ app.controller('mainCtrl', function($scope, $state, pageService) {
     'ui-sref': 'transactions',
     menus: [{
       title: 'Payments',
-      iconClass: 'fa fa-credit-card icon',
+      iconClass: 'fa fa-cc-paypal icon',
       'ui-sref': 'transactions-payments'
     }, {
       title: 'Subscription Prices',
