@@ -16,7 +16,7 @@ class Prices_model extends CI_Model {
    */
   public function get($opts) {
     // Default fields
-    $fields = array('description', 'price');
+    $fields = array('description', 'price', 'payer');
 
     // Filter fields to display if any
     if(!is_null($opts['fields'])) {
@@ -36,6 +36,7 @@ class Prices_model extends CI_Model {
     // Execute Query
     $this->db->select(implode(', ', $fields));
     $this->db->from('payment_types');
+    $this->db->order_by('payer', 'ASC');
     $this->db->order_by('price', 'ASC');
     if(!is_null($limit)) {
       if(!is_null($offset)) $this->db->limit($limit, $offset);

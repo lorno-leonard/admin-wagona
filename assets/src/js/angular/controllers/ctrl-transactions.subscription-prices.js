@@ -120,6 +120,7 @@ app.controller('transactionsSubscriptionPricesCtrl', function($scope, pageServic
   $scope.editData = function(dataRow) {
     $scope.currentDataRow = dataRow;
     $scope.form.type_id = dataRow.type_id;
+    $scope.form.payer = _.isEqual(dataRow.payer, 'I') ? 'Individual' : 'School';
     $scope.form.description = dataRow.description;
     $scope.form.price = +dataRow.price;
     
